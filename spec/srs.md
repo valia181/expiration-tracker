@@ -56,7 +56,7 @@ The system is a self-contained, single-user mobile application running locally o
 *   **Item Status (Color Code)**: A visual indicator assigned to an item based on its expiration date relative to the current date:
     *   **Red (Expired)**: The expiration date has passed (Date < Today). The item remains in the list until manually deleted.
     *   **Orange (Warning)**: The expiration date is approaching within the configured Notification Lead Time.
-    *   **Green (Safe)**: The expiration date is far in advance (more than the lead time / more than 3 days remaining).
+    *   **Green (Safe)**: The expiration date is strictly beyond the configured Notification Lead Time window (Date > Today + Lead Time).
 *   **Storage Location**: An optional text attribute indicating the physical placement of the item within the household (e.g., pantry, refrigerator, bathroom cabinet).
 
 ---
@@ -83,15 +83,15 @@ The system is a standalone native Android application. It interacts directly wit
 
 #### **Item Creation & Validation**
 *   **REQ-F-001**: The system shall allow the user to manually create a new item by providing a title, expiration date, category, and an optional storage location.
-*   **REQ-F-002**: The system shall validate that the item title is not empty before saving the item.
-*   **REQ-F-003**: The system shall validate that a valid calendar date is provided for the expiration date before saving the item.
+*   **REQ-F-002**: The system shall validate that the item title is neither empty nor consists solely of whitespace characters before saving the item.
+*   **REQ-F-003**: The system shall validate that a valid calendar date is provided for the expiration date before saving the item (dates in the past must be permitted to allow entry of already expired items).
 
 #### **Display & Status**
 *   **REQ-F-004**: The system shall display all saved items in a unified chronological list, sorted by expiration date with the soonest expiring items appearing first.
 *   **REQ-F-005**: The system shall dynamically assign and display a color status code for each item based on its expiration date relative to the current date:
     *   **Red**: Expiration date has passed.
     *   **Orange**: Expiration date falls within the configured global notification lead time.
-    *   **Green**: Expiration date is safely in the future.
+    *   **Green**: Expiration date is strictly beyond the configured Notification Lead Time window.
 
 #### **Search & Filtering**
 *   **REQ-F-006**: The system shall provide a search interface allowing users to filter and view items whose titles match the search query.
@@ -117,8 +117,8 @@ The system is a standalone native Android application. It interacts directly wit
 *   **REQ-NF-004**: Background notification checks shall utilize persistent OS scheduling (such as Android WorkManager) to ensure scheduled tasks reliably survive application restarts and device reboots.
 
 #### **Usability**
-*   **REQ-NF-005**: The application's color-coding status indicators (Red, Orange, Green) shall adhere to accessibility contrast standards to ensure readability for users with color vision deficiencies.
-*   **REQ-NF-006**: The user interface shall follow standard Android design patterns (Material Design guidelines) to ensure an intuitive user experience with minimal learning curve.
+*   **REQ-NF-005**: The application's color-coding status indicators (Red, Orange, Green) shall adhere to WCAG 2.1 Level AA contrast ratio standards (minimum 4.5:1 ratio against the background) to ensure readability for users with color vision deficiencies.
+*   **REQ-NF-006**: The user interface shall strictly adhere to Android Material Design 3 guidelines, specifically ensuring that all interactive elements (buttons, filter chips) maintain a minimum touch target size of 48x48 dp.
 
 #### **Maintainability**
 *   **REQ-NF-007**: The codebase shall adhere to a clean architecture pattern (such as MVVM - Model-View-ViewModel) to clearly separate UI logic, business logic, and local data access.
@@ -127,6 +127,7 @@ The system is a standalone native Android application. It interacts directly wit
 
 ### 7. Acceptance Criteria
 
+#### **Functional Acceptance Criteria**
 *   **AC-F-001 (Manual Item Creation):** Given the user is on the item creation screen, when they provide a valid title, expiration date, category, and optional storage location and tap "Save", then the item is successfully stored in the local database and appears in the main item list.
 *   **AC-F-002 (Title Validation):** Given the user attempts to save an item with an empty or whitespace-only title, when the save action is triggered, then the system prevents saving and displays a validation error message prompting for a title.
 *   **AC-F-003 (Date Validation):** Given the user attempts to save an item without selecting a valid calendar date, when the save action is triggered, then the system prevents saving and displays a validation error message.
@@ -134,9 +135,15 @@ The system is a standalone native Android application. It interacts directly wit
 *   **AC-F-005 (Dynamic Color Status):** Given the items are displayed in the list:
     *   An item whose expiration date is before the current date displays a **Red** indicator.
     *   An item whose expiration date falls within the configured global notification lead time displays an **Orange** indicator.
-    *   An item whose expiration date is further out than the lead time displays a **Green** indicator.
+    *   An item whose expiration date is strictly beyond the configured Notification Lead Time window displays a **Green** indicator.
 *   **AC-F-006 (Search Functionality):** Given the user types a query into the search bar, when the text changes, then the main list dynamically updates to show only items whose titles contain the search query (case-insensitive).
 *   **AC-F-007 (Category Filtering):** Given the user taps a category filter chip (Food, Medicine, Cosmetics, or Chemicals), when the filter is active, then only items belonging to that specific category are displayed. Tapping "All" resets the filter to show all items.
 *   **AC-F-008 (Global Notification Lead Time Configuration):** Given the user navigates to the settings screen and selects a new lead time option (e.g., changing from 3 days to 7 days), when saved, then items falling within the new 7-day window correctly update their status to Orange.
 *   **AC-F-009 (Database Export via SAF):** Given the user triggers the backup export action, when the native Android Storage Access Framework (SAF) document picker opens and a destination is chosen, then a JSON file containing all current item records is successfully generated and saved to the target location.
 *   **AC-F-010 (Database Import via SAF):** Given the user triggers the backup import action and selects a valid JSON backup file via the SAF picker, when the file is processed, then the local database is successfully populated with the imported data, and the main UI refreshes to display the newly imported items.
+
+#### **Non-Functional Acceptance Criteria**
+*   **AC-NF-001 (Background Reliability):** Given a notification is scheduled for an item, when the Android device is rebooted, then the scheduled WorkManager task is automatically restored and triggers the notification at the correct time.
+*   **AC-NF-002 (Query Performance):** Given a database populated with simulated item records, when a search or category filter is executed, then the database query execution and UI rendering complete in under 100 milliseconds.
+*   **AC-NF-003 (Usability & Accessibility):** Given the application UI is rendered, when analyzed, then all interactive elements (buttons, filter chips) measure a minimum touch target area of 48x48 dp, and color indicators maintain a minimum 4.5:1 contrast ratio.
+*   **AC-NF-004 (Architecture Maintainability):** Given the source code is submitted for review, when statically analyzed, then the codebase demonstrates a strict MVVM separation: UI classes contain no direct SQLite, and data access is handled through Repository layers.
