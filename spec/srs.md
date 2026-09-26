@@ -79,6 +79,13 @@ The system is a standalone native Android application. It interacts directly wit
 
 ---
 
+## Technical Constraints
+
+- **TDD Methodology**: The development must strictly follow the Test-Driven Development (TDD) approach. The AI coding agent must create unit tests before implementing the actual functionality.
+- **System Logging**: The system must implement mandatory logging. Specifically, log files must be generated and recorded during the execution of tests and core system operations.
+
+---
+
 ### 5. Functional Requirements
 
 #### **Item Creation & Validation**
