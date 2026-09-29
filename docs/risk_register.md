@@ -1,0 +1,9 @@
+# Project Risk Register
+
+| Risk Category & Name | Manifestation (What happens) | Potential Impact | Detection Method | Prevention & Mitigation | Priority |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **AI-Specific:** Error correlation between code and tests | The coding agent generates faulty code, then writes a test for it that passes successfully, cementing the error. | The bug reaches the release, creating a false sense of security. | Manual code review of tests before writing the code begins. | Test-First approach. Prohibition of moving to a Feature ticket without human approval of the Test ticket. | **High** |
+| **AI-Specific:** Tool usage errors | The agent generates incorrect commands in the terminal. | Halt of the automated process, cluttering of Git history, script execution failures. | Errors (exit codes) in the agent's console during command execution. | Manual override: executing console commands manually in case of agent failure. | **Medium** |
+| **AI-Specific:** Loss of context | The model forgets specification constraints and starts writing code for non-existent features. | Wasted agent time, codebase bloat, emergence of unnecessary dependencies. | Architecture check at GATE stages and code reviews. | Breaking down tasks into small, isolated tickets. | **Medium** |
+| **Traditional:** Resource management | The human cannot check tests and close Gate tickets at the agent's working speed. | AI agent idle time, significant shift in the project schedule. | Accumulation of open tickets in the "In Review" column on GitHub Projects. | Adequate time planning: allocating realistic time blocks exclusively for human control. | **High** |
+| **Traditional:** Local data corruption | Failure when writing to the SQLite database or incorrect parsing during JSON import. | Loss of the user's entire inventory list. | Database unit tests and manual testing at the GATE-02 stage. | Implementation of backup functionality. | **High** |
