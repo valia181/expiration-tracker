@@ -1,62 +1,33 @@
-\# Календарний план проєкту
-
-
-
 ```mermaid
-
 gantt
+   title Expiration Date Monitoring System (Updated Dependencies)
+   dateFormat  YYYY-MM-DD
+   axisFormat  %m-%d
 
-&#x20;   title Expiration Date Monitoring System
+   section Phase 1: Core Setup
+   TSK-001 Setup MVVM, DB, Log (AI)  :a1, 2026-10-01, 1d
+   TSK-002 Test Validation (Joint)   :a2, after a1, 1d
+   TSK-003 Impl Validation (AI)      :a3, after a2, 1d
+   GATE-01 DB & Arch Review (Human)  :milestone, m1, after a3, 0d
 
-&#x20;   dateFormat  YYYY-MM-DD
+   section Phase 2: Core UI (List)
+   TSK-004 Test List (Joint)         :b1, after m1, 1d
+   TSK-005 Impl List (AI)            :b2, after b1, 1d
 
-&#x20;   axisFormat  %m-%d
+   section Phase 3: Parallel UI Features
+   TSK-006 Test Deletion (Joint)     :c1, after b2, 1d
+   TSK-007 Impl Deletion (AI)        :c2, after c1, 1d
+   TSK-008 Test Search (Joint)       :c3, after b2, 1d
+   TSK-009 Impl Search (AI)          :c4, after c3, 1d
+   TSK-010 Test Lead Time (Joint)    :c5, after b2, 1d
+   TSK-011 Impl Lead Time (AI)       :c6, after c5, 1d
 
+   section Phase 4: Background & Backup
+   TSK-012 Test Notifications (Joint):d1, after m1, 1d
+   TSK-013 Impl Notifications (AI)   :d2, after d1 c6, 1d
+   TSK-014 Test Backup (Joint)       :d3, after m1, 1d
+   TSK-015 Impl Backup (AI)          :d4, after d3, 1d
 
-
-&#x20;   section Phase 1: Core Setup
-
-&#x20;   TSK-001 Setup MVVM \& DB (AI)       :a1, 2026-10-01, 1d
-
-&#x20;   TSK-002 Test Validation (Joint)    :a2, after a1, 1d
-
-&#x20;   TSK-003 Impl Validation (AI)       :a3, after a2, 1d
-
-&#x20;   GATE-01 DB Review (Human)          :milestone, m1, after a3, 0d
-
-
-
-&#x20;   section Phase 2: Core Features
-
-&#x20;   TSK-004 Test List (Joint)          :b1, after m1, 1d
-
-&#x20;   TSK-005 Impl List (AI)             :b2, after b1, 1d
-
-&#x20;   TSK-006 Test Search (Joint)        :b3, after b2, 1d
-
-&#x20;   TSK-007 Impl Search (AI)           :b4, after b3, 1d
-
-&#x20;   TSK-008 Test Lead Time (Joint)     :b5, after b4, 1d
-
-&#x20;   TSK-009 Impl Lead Time (AI)        :b6, after b5, 1d
-
-
-
-&#x20;   section Phase 3: Background
-
-&#x20;   TSK-010 Test Notifications (Joint) :c1, after m1, 1d
-
-&#x20;   TSK-011 Impl Notifications (AI)    :c2, after c1, 1d
-
-&#x20;   TSK-012 Test Backup (Joint)        :c3, after c2, 1d
-
-&#x20;   TSK-013 Impl Backup (AI)           :c4, after c3, 1d
-
-
-
-&#x20;   section Phase 4: Release
-
-&#x20;   GATE-02 Pre-Release Gate (Human)   :milestone, m2, after b6 c4, 0d
-
-&#x20;   TSK-014 Perf Verification (Joint)  :d1, after m2, 1d
-
+   section Phase 5: Release
+   GATE-02 Pre-Release Gate (Human)  :milestone, m2, after c2 c4 d2 d4, 0d
+   TSK-016 Perf Verification (Joint) :e1, after m2, 1d

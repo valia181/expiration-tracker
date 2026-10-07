@@ -111,6 +111,9 @@ The system is a standalone native Android application. It interacts directly wit
 *   **REQ-F-009**: The system shall provide an export function that serializes the local database into a JSON file, utilizing the native Android Storage Access Framework (SAF) to let the user select the destination.
 *   **REQ-F-010**: The system shall provide an import function that reads a JSON file via the native Android Storage Access Framework (SAF) and populates the local database.
 
+#### **Item Deletion**
+*   **REQ-F-011**: The system shall allow the user to manually delete an existing item from the local database, permanently removing it from the item list.
+
 ---
 
 ### 6. Non-Functional Requirements
@@ -148,6 +151,7 @@ The system is a standalone native Android application. It interacts directly wit
 *   **AC-F-008 (Global Notification Lead Time Configuration):** Given the user navigates to the settings screen and selects a new lead time option (e.g., changing from 3 days to 7 days), when saved, then items falling within the new 7-day window correctly update their status to Orange.
 *   **AC-F-009 (Database Export via SAF):** Given the user triggers the backup export action, when the native Android Storage Access Framework (SAF) document picker opens and a destination is chosen, then a JSON file containing all current item records is successfully generated and saved to the target location.
 *   **AC-F-010 (Database Import via SAF):** Given the user triggers the backup import action and selects a valid JSON backup file via the SAF picker, when the file is processed, then the local database is successfully populated with the imported data, and the main UI refreshes to display the newly imported items.
+*   **AC-F-011 (Item Deletion):** Given an item exists in the database and is displayed in the list, when the user selects the delete action for that item, then the item is permanently removed from the local database and immediately disappears from the main UI list.
 
 #### **Non-Functional Acceptance Criteria**
 *   **AC-NF-001 (Background Reliability):** Given a notification is scheduled for an item, when the Android device is rebooted, then the scheduled WorkManager task is automatically restored and triggers the notification at the correct time.
