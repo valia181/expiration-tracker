@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,8 +42,8 @@ import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.ui.viewmodel.ItemListViewModel
 
 /**
- * Main Chronological Item List Screen with Search Bar, Category Filtering, and Deletion Confirmation.
- * Traceability: REQ-F-001, REQ-F-004, REQ-F-005, REQ-F-006, REQ-F-007, REQ-F-011, AC-F-011, REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006.
+ * Main Chronological Item List Screen with Search Bar, Category Filtering, Deletion Confirmation, and Settings.
+ * Traceability: REQ-F-001, REQ-F-004, REQ-F-005, REQ-F-006, REQ-F-007, REQ-F-008, REQ-F-011, AC-F-008, AC-F-011, REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +66,19 @@ fun ItemListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Expiration Tracker") },
+                actions = {
+                    IconButton(
+                        onClick = { viewModel.openSettingsDialog() },
+                        modifier = Modifier
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .testTag("btn_open_settings")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -223,6 +237,15 @@ fun ItemListScreen(
                         Text("Cancel")
                     }
                 }
+            )
+        }
+
+        // Settings Dialog (REQ-F-008, AC-F-008)
+        if (uiState.isSettingsDialogOpen) {
+            SettingsDialog(
+                currentLeadTime = uiState.notificationLeadTimeDays,
+                onDismiss = { viewModel.closeSettingsDialog() },
+                onSave = { leadTime -> viewModel.updateLeadTimeSetting(leadTime) }
             )
         }
     }

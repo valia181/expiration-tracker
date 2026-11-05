@@ -7,6 +7,7 @@ import com.example.expirationtracker.domain.model.Category
 import com.example.expirationtracker.domain.model.ErrorResponse
 import com.example.expirationtracker.domain.model.Item
 import com.example.expirationtracker.domain.model.ItemInput
+import com.example.expirationtracker.domain.model.Settings
 import com.example.expirationtracker.domain.usecase.GetSortedItemsWithStatusUseCase
 import com.example.expirationtracker.domain.validation.ItemValidator
 import java.time.Instant
@@ -36,6 +37,7 @@ class ItemApiController(
         const val PATH_ITEMS = "/api/v1/items"
         const val ALLOWED_CATEGORIES_STRING = "Food, Medicine, Cosmetics, Chemicals"
         const val DEFAULT_NOTIFICATION_LEAD_TIME_DAYS = 7
+        const val ERROR_MSG_INVALID_LEAD_TIME = "Validation error: 'notificationLeadTime' must be one of [1, 3, 7, 14]."
     }
 
     // In-memory backing store for testing / standalone usage if repository is not injected
@@ -222,6 +224,77 @@ class ItemApiController(
                 "Outgoing API response: $method $path -> HTTP ${HttpStatus.NOT_FOUND} ${HttpStatus.REASON_NOT_FOUND}: $errorMessage"
             )
             ApiResponse(status = HttpStatus.NOT_FOUND, error = errorResponse)
+        }
+    }
+
+    /**
+     * GET /api/v1/settings: Retrieve global settings.
+     */
+    suspend fun getSettings(): ApiResponse<Settings> {
+        val method = "GET"
+        val path = "/api/v1/settings"
+        SystemLogger.info(TAG, "Incoming API request: $method $path")
+
+        val leadTime = if (repository != null) {
+            repository.getLeadTime()
+        } else {
+            DEFAULT_NOTIFICATION_LEAD_TIME_DAYS
+        }
+
+        val settings = Settings(notificationLeadTime = leadTime)
+        SystemLogger.info(
+            TAG,
+            "Outgoing API response: $method $path -> HTTP ${HttpStatus.OK} ${HttpStatus.REASON_OK} (leadTime=$leadTime)"
+        )
+        return ApiResponse(status = HttpStatus.OK, data = settings)
+    }
+
+    /**
+     * PUT /api/v1/settings: Update global settings.
+     */
+    suspend fun updateSettings(settings: Settings): ApiResponse<Settings> {
+        val method = "PUT"
+        val path = "/api/v1/settings"
+        SystemLogger.info(TAG, "Incoming API request: $method $path, body=$settings")
+
+        if (!Settings.isValidLeadTime(settings.notificationLeadTime)) {
+            val errorMessage = ERROR_MSG_INVALID_LEAD_TIME
+            val errorResponse = ErrorResponse(
+                timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                status = HttpStatus.BAD_REQUEST,
+                error = HttpStatus.REASON_BAD_REQUEST,
+                message = errorMessage,
+                path = path
+            )
+            SystemLogger.warn(
+                TAG,
+                "Outgoing API response: $method $path -> HTTP ${HttpStatus.BAD_REQUEST} ${HttpStatus.REASON_BAD_REQUEST}: $errorMessage"
+            )
+            return ApiResponse(status = HttpStatus.BAD_REQUEST, error = errorResponse)
+        }
+
+        val success = if (repository != null) {
+            repository.saveLeadTime(settings.notificationLeadTime).isSuccess
+        } else {
+            true
+        }
+
+        return if (success) {
+            SystemLogger.info(
+                TAG,
+                "Outgoing API response: $method $path -> HTTP ${HttpStatus.OK} ${HttpStatus.REASON_OK} (leadTime=${settings.notificationLeadTime})"
+            )
+            ApiResponse(status = HttpStatus.OK, data = settings)
+        } else {
+            val errorResponse = ErrorResponse(
+                timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                status = HttpStatus.BAD_REQUEST,
+                error = HttpStatus.REASON_BAD_REQUEST,
+                message = "Failed to save settings",
+                path = path
+            )
+            SystemLogger.error(TAG, "Outgoing API response: $method $path -> HTTP ${HttpStatus.BAD_REQUEST} error")
+            ApiResponse(status = HttpStatus.BAD_REQUEST, error = errorResponse)
         }
     }
 }

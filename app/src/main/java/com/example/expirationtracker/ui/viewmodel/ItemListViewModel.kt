@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 /**
@@ -31,7 +32,8 @@ data class ItemListUiState(
     val searchQuery: String = "",
     val selectedCategory: String? = null,
     val itemToDeleteId: String? = null,
-    val isDeleteConfirmationOpen: Boolean = false
+    val isDeleteConfirmationOpen: Boolean = false,
+    val isSettingsDialogOpen: Boolean = false
 )
 
 /**
@@ -64,22 +66,35 @@ class ItemListViewModel(
 
         viewModelScope.launch(mainDispatcher) {
             try {
-                val response: ApiResponse<List<Item>> = apiController.getItems(search = search, category = category)
+                // Fetch latest global lead time settings on IO dispatcher (REQ-NF-001)
+                val settingsResponse = withContext(Dispatchers.IO) { apiController.getSettings() }
+                val leadTimeDays = if (settingsResponse.isSuccessful && settingsResponse.data != null) {
+                    settingsResponse.data.notificationLeadTime
+                } else {
+                    _uiState.value.notificationLeadTimeDays
+                }
+
+                val response: ApiResponse<List<Item>> = withContext(Dispatchers.IO) {
+                    apiController.getItems(search = search, category = category)
+                }
                 if (response.isSuccessful) {
                     val rawItems = response.data ?: emptyList()
-                    val sortedWithStatus = getSortedItemsUseCase.execute(
-                        items = rawItems,
-                        currentDate = currentDate,
-                        leadTimeDays = _uiState.value.notificationLeadTimeDays
-                    )
+                    val sortedWithStatus = withContext(Dispatchers.Default) {
+                        getSortedItemsUseCase.execute(
+                            items = rawItems,
+                            currentDate = currentDate,
+                            leadTimeDays = leadTimeDays
+                        )
+                    }
 
                     _uiState.value = _uiState.value.copy(
                         items = sortedWithStatus,
+                        notificationLeadTimeDays = leadTimeDays,
                         isLoading = false
                     )
                     SystemLogger.info(
                         TAG,
-                        "Loaded and rendered ${sortedWithStatus.size} items matching search='$search', category='$category'."
+                        "Loaded and rendered ${sortedWithStatus.size} items matching search='$search', category='$category' (leadTime=$leadTimeDays)."
                     )
                 } else {
                     val errorMsg = response.error?.message ?: "Failed to load items."
@@ -117,6 +132,35 @@ class ItemListViewModel(
 
     fun closeAddDialog() {
         _uiState.value = _uiState.value.copy(isAddDialogOpen = false, addDialogError = null)
+    }
+
+    fun openSettingsDialog() {
+        SystemLogger.info(TAG, "Opening settings dialog.")
+        _uiState.value = _uiState.value.copy(isSettingsDialogOpen = true)
+    }
+
+    fun closeSettingsDialog() {
+        SystemLogger.info(TAG, "Closing settings dialog.")
+        _uiState.value = _uiState.value.copy(isSettingsDialogOpen = false)
+    }
+
+    fun updateLeadTimeSetting(leadTime: Int) {
+        SystemLogger.info(TAG, "Updating lead time setting to $leadTime days.")
+        viewModelScope.launch(mainDispatcher) {
+            val response = apiController.updateSettings(com.example.expirationtracker.domain.model.Settings(notificationLeadTime = leadTime))
+            if (response.isSuccessful) {
+                SystemLogger.info(TAG, "Successfully updated lead time setting via API: $leadTime")
+                _uiState.value = _uiState.value.copy(
+                    notificationLeadTimeDays = leadTime,
+                    isSettingsDialogOpen = false
+                )
+                loadItems() // Triggers dynamic recalculation of StatusColor for existing items per AC-F-008
+            } else {
+                val errorMsg = response.error?.message ?: "Failed to update settings."
+                SystemLogger.warn(TAG, "Failed to update lead time setting: $errorMsg")
+                _uiState.value = _uiState.value.copy(errorMessage = errorMsg, isSettingsDialogOpen = false)
+            }
+        }
     }
 
     /**

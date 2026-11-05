@@ -21,6 +21,8 @@ class ItemSearchAndFilterUnitTest {
             override suspend fun createItem(input: com.example.expirationtracker.domain.model.ItemInput) = Result.failure<com.example.expirationtracker.domain.model.Item>(NotImplementedError())
             override suspend fun getAllItems(search: String?, category: String?) = emptyList<com.example.expirationtracker.domain.model.Item>()
             override suspend fun deleteItem(id: String) = false
+            override suspend fun getLeadTime() = 7
+            override suspend fun saveLeadTime(leadTime: Int) = Result.success(Unit)
         }
         val viewModel = ItemListViewModel(
             repository = fakeRepo,
@@ -38,6 +40,8 @@ class ItemSearchAndFilterUnitTest {
             override suspend fun createItem(input: com.example.expirationtracker.domain.model.ItemInput) = Result.failure<com.example.expirationtracker.domain.model.Item>(NotImplementedError())
             override suspend fun getAllItems(search: String?, category: String?) = emptyList<com.example.expirationtracker.domain.model.Item>()
             override suspend fun deleteItem(id: String) = false
+            override suspend fun getLeadTime() = 7
+            override suspend fun saveLeadTime(leadTime: Int) = Result.success(Unit)
         }
         val viewModel = ItemListViewModel(
             repository = fakeRepo,

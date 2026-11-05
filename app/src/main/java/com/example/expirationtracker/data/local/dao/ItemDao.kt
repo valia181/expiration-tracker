@@ -12,7 +12,7 @@ import com.example.expirationtracker.domain.model.Category
  * Data Access Object (DAO) for items table implementing SQLite operations with transactional integrity.
  * Traceability: TSK-001, REQ-NF-003, REQ-NF-002 (<100ms query performance).
  */
-open class ItemDao(private val dbHelper: ExpirationTrackerDbHelper? = null) {
+open class ItemDao(val dbHelper: ExpirationTrackerDbHelper? = null) {
 
     companion object {
         private const val TAG = "ItemDao"
