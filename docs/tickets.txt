@@ -1,0 +1,179 @@
+TSK-001: Setup MVVM Architecture, SQLite Database Schema, and System Logging
+
+• Ticket ID: TSK-001
+• Title: Setup MVVM Architecture, SQLite Database Schema, and System Logging
+• Type: Feature
+• Requirement ID: REQ-NF-007, REQ-NF-003, Technical Constraints (Logging)
+• Assignee: AI Agent
+• Dependencies: None
+• Description: Establish the core project structure following MVVM architecture guidelines. Define the local SQLite database schema (using Room or native SQLite) with transactional integrity to store items and global settings. Implement a mandatory system logging infrastructure to generate and record log files during the execution of tests and core system operations.
+
+TSK-002: Test Suite for Item Validation and Creation
+
+• Ticket ID: TSK-002
+• Title: Test Suite for Item Validation and Creation
+• Type: Test
+• Requirement ID: REQ-F-001, REQ-F-002, REQ-F-003
+• Assignee: Joint
+• Dependencies: TSK-001
+• Description: Write unit tests verifying that item creation succeeds with valid inputs, fails with empty/whitespace titles, and fails when no valid expiration date is provided. These tests must run and fail before implementation begins.
+
+TSK-003: Implement Item Entity and Validation Logic
+
+• Ticket ID: TSK-003
+• Title: Implement Item Entity and Validation Logic
+• Type: Feature
+• Requirement ID: REQ-F-001, REQ-F-002, REQ-F-003
+• Assignee: AI Agent
+• Dependencies: TSK-002
+• Description: Create the Item model/entity with fields for Title, Expiration Date, Category (Food, Medicine, Cosmetics, Chemicals), and optional Storage Location. Implement validation logic to satisfy the tests written in TSK-002.
+
+GATE-01: DB, Architecture & Logging Review
+
+• Ticket ID: GATE-01
+• Title: DB, Architecture & Logging Review Gate
+• Type: Gate
+• Requirement ID: REQ-NF-007, REQ-NF-003, Technical Constraints (Logging)
+• Assignee: Human
+• Dependencies: TSK-003
+• Description: Review the database schema, MVVM package structure, item validation logic, and system logging infrastructure. Ensure the codebase is clean, logs are being generated correctly, and the foundation is ready to support UI and background services. This gate must pass before any subsequent feature development begins.
+
+TSK-004: Test Suite for Chronological List and Color Status
+
+• Ticket ID: TSK-004
+• Title: Test Suite for Chronological List and Color Status
+• Type: Test
+• Requirement ID: REQ-F-004, REQ-F-005, REQ-NF-005
+• Assignee: Joint
+• Dependencies: GATE-01
+• Description: Write unit and UI tests verifying that items are sorted chronologically (soonest first) and that the correct color status (Red, Orange, Green) is calculated and assigned based on the current date and global lead time.
+
+TSK-005: Implement Chronological Item List View with Color Status
+
+• Ticket ID: TSK-005
+• Title: Implement Chronological Item List View with Color Status
+• Type: Feature
+• Requirement ID: REQ-F-004, REQ-F-005, REQ-NF-005, REQ-NF-006
+• Assignee: AI Agent
+• Dependencies: TSK-004
+• Description: Build the main UI screen displaying saved items in a unified chronological list. Dynamically assign Red (expired), Orange (warning), and Green (safe) status indicators adhering to WCAG 2.1 Level AA contrast standards and Material Design 3 touch targets.
+
+TSK-006: Test Suite for Item Deletion
+
+• Ticket ID: TSK-006
+• Title: Test Suite for Item Deletion
+• Type: Test
+• Requirement ID: REQ-F-011
+• Assignee: Joint
+• Dependencies: TSK-005
+• Description: Write unit and UI tests verifying that selecting the delete action on an item correctly removes it from the local database and dynamically updates the list view.
+
+TSK-007: Implement Item Deletion
+
+• Ticket ID: TSK-007
+• Title: Implement Item Deletion
+• Type: Feature
+• Requirement ID: REQ-F-011
+• Assignee: AI Agent
+• Dependencies: TSK-006
+• Description: Implement the manual deletion functionality for tracked items, ensuring permanent removal from the local database and real-time updates to the unified list view.
+
+TSK-008: Test Suite for Search and Category Filtering
+
+• Ticket ID: TSK-008
+• Title: Test Suite for Search and Category Filtering
+• Type: Test
+• Requirement ID: REQ-F-006, REQ-F-007, REQ-NF-002
+• Assignee: Joint
+• Dependencies: TSK-005
+• Description: Write unit and integration tests verifying that search queries filter items by title (case-insensitive) and that category filter chips correctly isolate items belonging to Food, Medicine, Cosmetics, or Chemicals.
+
+TSK-009: Implement Search and Category Filtering
+
+• Ticket ID: TSK-009
+• Title: Implement Search and Category Filtering
+• Type: Feature
+• Requirement ID: REQ-F-006, REQ-F-007, REQ-NF-002
+• Assignee: AI Agent
+• Dependencies: TSK-008
+• Description: Implement a case-insensitive search bar to filter items by title, and Material Design 3 filter chips to filter items by category. Ensure queries execute and render within 100ms.
+
+TSK-010: Test Suite for Global Notification Lead Time Settings
+
+• Ticket ID: TSK-010
+• Title: Test Suite for Global Notification Lead Time Settings
+• Type: Test
+• Requirement ID: REQ-F-008
+• Assignee: Joint
+• Dependencies: TSK-005
+• Description: Write unit tests verifying that changing the global notification lead time (1, 3, 7, or 14 days) correctly updates the calculated status of items in the list view.
+
+TSK-011: Implement Global Notification Lead Time Settings
+
+• Ticket ID: TSK-011
+• Title: Implement Global Notification Lead Time Settings
+• Type: Feature
+• Requirement ID: REQ-F-008
+• Assignee: AI Agent
+• Dependencies: TSK-010
+• Description: Create a settings interface allowing users to select a global notification lead time. Ensure that changing this setting dynamically updates the color status of items in the main list.
+
+TSK-012: Test Suite for Background Notification Scheduling
+
+• Ticket ID: TSK-012
+• Title: Test Suite for Background Notification Scheduling
+• Type: Test
+• Requirement ID: REQ-NF-004
+• Assignee: Joint
+• Dependencies: GATE-01
+• Description: Write integration tests using WorkManager test helpers to verify that background notification tasks are scheduled correctly and survive simulated device reboots.
+
+TSK-013: Implement Background Notification Scheduling via WorkManager
+
+• Ticket ID: TSK-013
+• Title: Implement Background Notification Scheduling via WorkManager
+• Type: Feature
+• Requirement ID: REQ-NF-004
+• Assignee: AI Agent
+• Dependencies: TSK-012, TSK-011
+• Description: Integrate Android WorkManager to schedule local push notifications for items approaching their expiration date based on the global lead time. Ensure scheduled tasks persist across application restarts and device reboots.
+
+TSK-014: Test Suite for JSON Export and Import
+
+• Ticket ID: TSK-014
+• Title: Test Suite for JSON Export and Import
+• Type: Test
+• Requirement ID: REQ-F-009, REQ-F-010
+• Assignee: Joint
+• Dependencies: GATE-01
+• Description: Write unit tests verifying that database records serialize correctly to JSON format and that importing a valid JSON file correctly populates the database while maintaining transactional integrity.
+
+TSK-015: Implement JSON Export and Import via Storage Access Framework
+
+• Ticket ID: TSK-015
+• Title: Implement JSON Export and Import via Storage Access Framework
+• Type: Feature
+• Requirement ID: REQ-F-009, REQ-F-010
+• Assignee: AI Agent
+• Dependencies: TSK-014
+• Description: Implement backup export and import functionality. Serialize the SQLite database to a JSON file and write/read it using the native Android Storage Access Framework (SAF) file picker.
+
+GATE-02: Pre-Release Validation
+
+• Ticket ID: GATE-02
+• Title: Pre-Release Validation Gate
+• Type: Gate
+• Requirement ID: REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006
+• Assignee: Human
+• Dependencies: TSK-007, TSK-009, TSK-013, TSK-015
+• Description: Perform manual validation of the integrated application. Verify that all features function correctly (including item deletion, search/filtering, notifications, and import/export), and the UI is stable. This gate must pass before final performance and accessibility verification.
+
+TSK-016: Performance and Accessibility Verification
+
+• Ticket ID: TSK-016
+• Title: Performance and Accessibility Verification
+• Type: Verification
+• Requirement ID: REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006
+• Assignee: Joint
+• Dependencies: GATE-02
+• Description: Verify that the application maintains 60 fps during list scrolling, database queries complete within 100ms, touch targets are at least 48x48 dp, and color contrast ratios meet WCAG 2.1 Level AA standards.
