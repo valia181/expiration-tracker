@@ -1,0 +1,67 @@
+Executing tasks: [:app:testDebugUnitTest, --tests, com.example.expirationtracker.ItemValidationBoundaryTest] in project C:\Users\HelpDesk\Desktop\expiration-tracker\expiration-tracker
+
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest --tests com.example.expirationtracker.ItemValidationBoundaryTest
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:compressDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:compileDebugUnitTestKotlin UP-TO-DATE
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:compressDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:extractDebugUnitTestJavaRes UP-TO-DATE
+[2026-11-05T12:11:30.203261Z] [INFO] [ItemValidator] Validation succeeded for item 'A'.
+[2026-11-05T12:11:30.212264Z] [INFO] [ItemValidator] Validation succeeded for item 'Floor Cleaner'.
+[2026-11-05T12:11:30.213550600Z] [INFO] [ItemValidator] Validation succeeded for item 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'.
+[2026-11-05T12:11:30.231692700Z] [WARN] [ItemValidator] Validation failed for item 'Chemical Solvent': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.236088800Z] [WARN] [ItemValidator] Validation failed for item 'Chemical Solvent': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.236088800Z] [WARN] [ItemValidator] Validation failed for item 'Chemical Solvent': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.236088800Z] [WARN] [ItemValidator] Validation failed for item 'Chemical Solvent': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.237222700Z] [WARN] [ItemValidator] Validation failed for item 'Cooking Oil': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.238537300Z] [WARN] [ItemValidator] Validation failed for item ' ': Validation error: Item title cannot be empty or whitespace-only.
+[2026-11-05T12:11:30.238537300Z] [WARN] [ItemValidator] Validation failed for item '
+': Validation error: Item title cannot be empty or whitespace-only.
+[2026-11-05T12:11:30.238537300Z] [WARN] [ItemValidator] Validation failed for item '
+  ': Validation error: Item title cannot be empty or whitespace-only.
+[2026-11-05T12:11:30.239542900Z] [INFO] [ItemValidator] Validation succeeded for item '   Baby Lotion   '.
+[2026-11-05T12:11:30.239542900Z] [WARN] [ItemValidator] Validation failed for item 'Cosmetic Cream': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.240538Z] [WARN] [ItemValidator] Validation failed for item 'Cosmetic Cream': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.240538Z] [WARN] [ItemValidator] Validation failed for item 'Cosmetic Cream': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.241548400Z] [INFO] [ItemValidator] Validation succeeded for item 'Emergency Water Rations'.
+[2026-11-05T12:11:30.242592500Z] [WARN] [ItemValidator] Validation failed for item 'Item 2027-04-31': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.242592500Z] [WARN] [ItemValidator] Validation failed for item 'Item 2027-06-31': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.242592500Z] [WARN] [ItemValidator] Validation failed for item 'Item 2027-09-31': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.243759200Z] [WARN] [ItemValidator] Validation failed for item 'Item 2027-11-31': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.243759200Z] [INFO] [ItemValidator] Validation succeeded for item 'Paracetamol 500mg (Extra) & Vitamin C+ #1 / 100% Organic! 💊'.
+[2026-11-05T12:11:30.245015900Z] [WARN] [ItemValidator] Validation failed for item 'Antiseptic': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.246016300Z] [WARN] [ItemValidator] Validation failed for item 'Antiseptic': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.246016300Z] [WARN] [ItemValidator] Validation failed for item 'Antiseptic': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.246016300Z] [WARN] [ItemValidator] Validation failed for item 'Antiseptic': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+[2026-11-05T12:11:30.246016300Z] [WARN] [ItemValidator] Validation failed for item 'Antiseptic': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+> Task :app:testDebugUnitTest
+BUILD SUCCESSFUL in 1s
+25 actionable tasks: 1 executed, 24 up-to-date
+Configuration cache entry stored.
+
+Build Analyzer results available
+2:11:30 PM: Execution finished ':app:testDebugUnitTest --tests "com.example.expirationtracker.ItemValidationBoundaryTest"'.

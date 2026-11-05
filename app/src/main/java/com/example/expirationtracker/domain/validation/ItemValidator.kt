@@ -1,7 +1,9 @@
 package com.example.expirationtracker.domain.validation
 
 import com.example.expirationtracker.core.logging.SystemLogger
+import com.example.expirationtracker.domain.model.ErrorResponse
 import com.example.expirationtracker.domain.model.ItemInput
+import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -22,8 +24,19 @@ data class ValidationResult(
  */
 class ItemValidator {
 
+    companion object {
+        const val DATE_FORMAT_PATTERN = "uuuu-MM-dd"
+        const val ERROR_TITLE_EMPTY = "Validation error: Item title cannot be empty or whitespace-only."
+        const val ERROR_DATE_EMPTY = "Validation error: Expiration date cannot be empty."
+        const val ERROR_DATE_INVALID = "Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format."
+        const val DEFAULT_VALIDATION_ERROR = "Validation error occurred."
+        const val HTTP_BAD_REQUEST_STATUS = 400
+        const val HTTP_BAD_REQUEST_ERROR = "Bad Request"
+        private const val TAG = "ItemValidator"
+    }
+
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter
-        .ofPattern("uuuu-MM-dd")
+        .ofPattern(DATE_FORMAT_PATTERN)
         .withResolverStyle(ResolverStyle.STRICT)
 
     fun validate(input: ItemInput): ValidationResult {
@@ -31,18 +44,18 @@ class ItemValidator {
 
         // Title validation (REQ-F-002)
         if (input.title.trim().isEmpty()) {
-            errors.add("Validation error: Item title cannot be empty or whitespace-only.")
+            errors.add(ERROR_TITLE_EMPTY)
         }
 
         // Expiration date validation (REQ-F-003)
         if (input.expirationDate.isBlank()) {
-            errors.add("Validation error: Expiration date cannot be empty.")
+            errors.add(ERROR_DATE_EMPTY)
         } else {
             try {
                 // Strict calendar date parsing prevents impossible dates like 2026-02-30
                 LocalDate.parse(input.expirationDate.trim(), dateFormatter)
             } catch (e: DateTimeParseException) {
-                errors.add("Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.")
+                errors.add(ERROR_DATE_INVALID)
             }
         }
 
@@ -52,11 +65,40 @@ class ItemValidator {
         )
 
         if (result.isValid) {
-            SystemLogger.info("ItemValidator", "Validation succeeded for item '${input.title}'.")
+            SystemLogger.info(TAG, "Validation succeeded for item '${input.title}'.")
         } else {
-            SystemLogger.warn("ItemValidator", "Validation failed for item '${input.title}': ${errors.joinToString("; ")}")
+            SystemLogger.warn(TAG, "Validation failed for item '${input.title}': ${errors.joinToString("; ")}")
         }
 
         return result
+    }
+
+    /**
+     * Maps validation failure to OpenAPI ErrorResponse specification (HTTP 400 Bad Request semantics).
+     */
+    fun toErrorResponse(
+        validationResult: ValidationResult,
+        path: String,
+        timestamp: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+    ): ErrorResponse {
+        val errorMessage = if (validationResult.errors.isNotEmpty()) {
+            validationResult.errors.joinToString("; ")
+        } else {
+            DEFAULT_VALIDATION_ERROR
+        }
+
+        val response = ErrorResponse(
+            timestamp = timestamp,
+            status = HTTP_BAD_REQUEST_STATUS,
+            error = HTTP_BAD_REQUEST_ERROR,
+            message = errorMessage,
+            path = path
+        )
+
+        SystemLogger.info(
+            TAG,
+            "Generated ErrorResponse for path '$path': status=$HTTP_BAD_REQUEST_STATUS, message='${response.message}'"
+        )
+        return response
     }
 }

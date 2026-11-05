@@ -2,8 +2,7 @@ package com.example.expirationtracker.data.repository
 
 import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.data.local.dao.ItemDao
-import com.example.expirationtracker.data.local.entity.ItemEntity
-import com.example.expirationtracker.domain.model.Category
+import com.example.expirationtracker.data.mapper.ItemMapper
 import com.example.expirationtracker.domain.model.Item
 import com.example.expirationtracker.domain.model.ItemInput
 import com.example.expirationtracker.domain.model.StatusColor
@@ -28,13 +27,17 @@ class ItemRepositoryImpl(
     private val validator: ItemValidator = ItemValidator()
 ) : ItemRepository {
 
+    companion object {
+        private const val TAG = "ItemRepository"
+    }
+
     override fun createItem(input: ItemInput): Result<Item> {
-        SystemLogger.info("ItemRepository", "Attempting to create item with title: '${input.title}'")
+        SystemLogger.info(TAG, "Attempting to create item with title: '${input.title}'")
 
         val validationResult: ValidationResult = validator.validate(input)
         if (!validationResult.isValid) {
             val errorMsg = validationResult.errors.joinToString("; ")
-            SystemLogger.warn("ItemRepository", "Item creation aborted: $errorMsg")
+            SystemLogger.warn(TAG, "Item creation aborted: $errorMsg")
             return Result.failure(IllegalArgumentException(errorMsg))
         }
 
@@ -46,40 +49,24 @@ class ItemRepositoryImpl(
             statusColor = StatusColor.GREEN
         )
 
-        val entity = ItemEntity(
-            id = domainItem.id,
-            title = domainItem.title,
-            expirationDate = domainItem.expirationDate,
-            category = domainItem.category.name,
-            storageLocation = domainItem.storageLocation,
-            statusColor = domainItem.statusColor.name
-        )
+        val entity = ItemMapper.toEntity(domainItem)
 
-        try {
+        return try {
             itemDao.insert(entity)
-            SystemLogger.info("ItemRepository", "Item successfully stored with ID: ${domainItem.id}")
-            return Result.success(domainItem)
+            SystemLogger.info(TAG, "Item successfully stored with ID: ${domainItem.id}")
+            Result.success(domainItem)
         } catch (e: Exception) {
-            SystemLogger.error("ItemRepository", "Failed to store item in database", e)
-            return Result.failure(e)
+            SystemLogger.error(TAG, "Failed to store item in database", e)
+            Result.failure(e)
         }
     }
 
     override fun getAllItems(): List<Item> {
-        return itemDao.getAllSortedByExpirationDate().map { entity ->
-            Item(
-                id = entity.id,
-                title = entity.title,
-                expirationDate = entity.expirationDate,
-                category = Category.valueOf(entity.category),
-                storageLocation = entity.storageLocation,
-                statusColor = StatusColor.valueOf(entity.statusColor)
-            )
-        }
+        return itemDao.getAllSortedByExpirationDate().map(ItemMapper::toDomain)
     }
 
     override fun deleteItem(id: String): Boolean {
-        SystemLogger.info("ItemRepository", "Deleting item id: $id")
+        SystemLogger.info(TAG, "Deleting item id: $id")
         return itemDao.deleteById(id) > 0
     }
 }
