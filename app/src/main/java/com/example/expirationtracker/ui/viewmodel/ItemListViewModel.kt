@@ -3,8 +3,12 @@ package com.example.expirationtracker.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expirationtracker.core.logging.SystemLogger
+import com.example.expirationtracker.data.api.ApiResponse
+import com.example.expirationtracker.data.api.ItemApiController
 import com.example.expirationtracker.data.repository.ItemRepository
+import com.example.expirationtracker.domain.model.Category
 import com.example.expirationtracker.domain.model.Item
+import com.example.expirationtracker.domain.model.ItemInput
 import com.example.expirationtracker.domain.usecase.GetSortedItemsWithStatusUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,16 +23,19 @@ data class ItemListUiState(
     val items: List<Item> = emptyList(),
     val isLoading: Boolean = false,
     val notificationLeadTimeDays: Int = 7,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isAddDialogOpen: Boolean = false,
+    val addDialogError: String? = null
 )
 
 /**
- * ViewModel managing the item list UI state, sorting, and status color calculations.
- * Traceability: TSK-005, REQ-F-004, REQ-F-005, REQ-NF-007 (MVVM).
+ * ViewModel managing the item list UI state, sorting, item creation, and status color calculations.
+ * Traceability: TSK-001, TSK-003, TSK-005, REQ-F-001, REQ-F-002, REQ-F-003, REQ-F-004, REQ-F-005.
  */
 class ItemListViewModel(
     private val repository: ItemRepository,
-    private val getSortedItemsUseCase: GetSortedItemsWithStatusUseCase = GetSortedItemsWithStatusUseCase()
+    private val getSortedItemsUseCase: GetSortedItemsWithStatusUseCase = GetSortedItemsWithStatusUseCase(),
+    private val apiController: ItemApiController = ItemApiController(repository = repository)
 ) : ViewModel() {
 
     companion object {
@@ -69,6 +76,48 @@ class ItemListViewModel(
                     isLoading = false,
                     errorMessage = e.message ?: "Failed to load items."
                 )
+            }
+        }
+    }
+
+    fun openAddDialog() {
+        _uiState.value = _uiState.value.copy(isAddDialogOpen = true, addDialogError = null)
+    }
+
+    fun closeAddDialog() {
+        _uiState.value = _uiState.value.copy(isAddDialogOpen = false, addDialogError = null)
+    }
+
+    /**
+     * Creates a new item via ItemApiController per OpenAPI contract (REQ-F-001, AC-F-001).
+     * On 201 Created: closes dialog and reloads chronological list.
+     * On 400 Bad Request: exposes ErrorResponse.message to UI (AC-F-002, AC-F-003).
+     */
+    fun addItem(
+        title: String,
+        expirationDate: String,
+        category: Category,
+        storageLocation: String?
+    ) {
+        viewModelScope.launch {
+            val input = ItemInput(
+                title = title,
+                expirationDate = expirationDate,
+                category = category,
+                storageLocation = storageLocation
+            )
+
+            SystemLogger.info(TAG, "Calling createItem API for title='$title'")
+            val response: ApiResponse<Item> = apiController.createItem(input)
+
+            if (response.isSuccessful) {
+                SystemLogger.info(TAG, "Item created successfully via API: ${response.data?.id}")
+                _uiState.value = _uiState.value.copy(isAddDialogOpen = false, addDialogError = null)
+                loadItems()
+            } else {
+                val errorMsg = response.error?.message ?: "Failed to create item."
+                SystemLogger.warn(TAG, "Item creation failed: $errorMsg")
+                _uiState.value = _uiState.value.copy(addDialogError = errorMsg)
             }
         }
     }
