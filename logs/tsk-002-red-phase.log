@@ -1,0 +1,80 @@
+Executing tasks: [:app:testDebugUnitTest, --tests, com.example.expirationtracker.ItemValidationTest] in project C:\Users\HelpDesk\Desktop\expiration-tracker\expiration-tracker
+
+Starting Gradle Daemon...
+Gradle Daemon started in 1 s 701 ms
+Reusing configuration cache.
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:compressDebugJavaRes UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:compileDebugUnitTestKotlin
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:3:38 Unresolved reference 'domain'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:4:38 Unresolved reference 'domain'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:5:38 Unresolved reference 'domain'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:24:37 Unresolved reference 'ItemValidator'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:28:21 Unresolved reference 'ItemValidator'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:34:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:37:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:44:22 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:48:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:56:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:59:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:66:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:74:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:77:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:81:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:89:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:92:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:96:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:100:33 Unresolved reference 'it'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:107:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:110:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:114:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:118:33 Unresolved reference 'it'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:125:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:128:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:132:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:136:33 Unresolved reference 'it'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:143:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:146:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:150:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:154:33 Unresolved reference 'it'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:161:21 Unresolved reference 'ItemInput'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:164:24 Unresolved reference 'Category'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:168:32 Unresolved reference 'validate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemValidationTest.kt:172:33 Unresolved reference 'it'.
+> Task :app:compileDebugUnitTestKotlin FAILED
+FAILURE: Build failed with an exception.
+* What went wrong:
+Execution failed for task ':app:compileDebugUnitTestKotlin' (registered by plugin 'com.android.internal.application').
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+BUILD FAILED in 10s
+22 actionable tasks: 1 executed, 21 up-to-date
+Configuration cache entry reused.
