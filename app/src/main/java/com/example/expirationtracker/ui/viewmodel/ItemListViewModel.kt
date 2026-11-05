@@ -29,7 +29,9 @@ data class ItemListUiState(
     val isAddDialogOpen: Boolean = false,
     val addDialogError: String? = null,
     val searchQuery: String = "",
-    val selectedCategory: String? = null
+    val selectedCategory: String? = null,
+    val itemToDeleteId: String? = null,
+    val isDeleteConfirmationOpen: Boolean = false
 )
 
 /**
@@ -158,16 +160,43 @@ class ItemListViewModel(
     }
 
     fun deleteItem(id: String) {
-        SystemLogger.info(TAG, "Requested deletion of item ID: $id")
-        viewModelScope.launch(mainDispatcher) {
-            val response = apiController.deleteItem(id)
-            if (response.isSuccessful) {
-                SystemLogger.info(TAG, "Item successfully deleted via API: $id")
-                loadItems()
-            } else {
-                val errorMsg = response.error?.message ?: "Failed to delete item: $id"
-                SystemLogger.warn(TAG, "Failed to delete item via API: $errorMsg")
-                _uiState.value = _uiState.value.copy(errorMessage = errorMsg)
+        requestDelete(id)
+    }
+
+    fun requestDelete(id: String) {
+        SystemLogger.info(TAG, "Requested deletion confirmation for item ID: $id")
+        _uiState.value = _uiState.value.copy(
+            itemToDeleteId = id,
+            isDeleteConfirmationOpen = true
+        )
+    }
+
+    fun dismissDeleteConfirmation() {
+        SystemLogger.info(TAG, "Deletion confirmation dismissed by user.")
+        _uiState.value = _uiState.value.copy(
+            itemToDeleteId = null,
+            isDeleteConfirmationOpen = false
+        )
+    }
+
+    fun confirmDelete() {
+        val id = _uiState.value.itemToDeleteId
+        if (id != null) {
+            SystemLogger.info(TAG, "Confirmed deletion of item ID: $id")
+            _uiState.value = _uiState.value.copy(
+                itemToDeleteId = null,
+                isDeleteConfirmationOpen = false
+            )
+            viewModelScope.launch(mainDispatcher) {
+                val response = apiController.deleteItem(id)
+                if (response.isSuccessful) {
+                    SystemLogger.info(TAG, "Item successfully deleted via API: $id")
+                    loadItems()
+                } else {
+                    val errorMsg = response.error?.message ?: "Failed to delete item: $id"
+                    SystemLogger.warn(TAG, "Failed to delete item via API: $errorMsg")
+                    _uiState.value = _uiState.value.copy(errorMessage = errorMsg)
+                }
             }
         }
     }

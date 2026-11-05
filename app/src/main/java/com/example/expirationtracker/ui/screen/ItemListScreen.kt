@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -24,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -38,8 +41,8 @@ import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.ui.viewmodel.ItemListViewModel
 
 /**
- * Main Chronological Item List Screen with Search Bar and Category Filtering.
- * Traceability: REQ-F-001, REQ-F-004, REQ-F-005, REQ-F-006, REQ-F-007, REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006, TSK-005, TSK-009.
+ * Main Chronological Item List Screen with Search Bar, Category Filtering, and Deletion Confirmation.
+ * Traceability: REQ-F-001, REQ-F-004, REQ-F-005, REQ-F-006, REQ-F-007, REQ-F-011, AC-F-011, REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -170,11 +173,11 @@ fun ItemListScreen(
                         ) {
                             items(
                                 items = uiState.items,
-                                key = { it.id }
+                                key = { item -> item.id }
                             ) { item ->
                                 ItemCard(
                                     item = item,
-                                    onDeleteClick = { viewModel.deleteItem(it) }
+                                    onDeleteClick = { id -> viewModel.requestDelete(id) }
                                 )
                             }
                         }
@@ -190,6 +193,35 @@ fun ItemListScreen(
                 onDismiss = { viewModel.closeAddDialog() },
                 onSave = { title, expirationDate, category, storageLocation ->
                     viewModel.addItem(title, expirationDate, category, storageLocation)
+                }
+            )
+        }
+
+        // Deletion Confirmation Dialog (AC-F-011, REQ-F-011)
+        if (uiState.isDeleteConfirmationOpen) {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissDeleteConfirmation() },
+                title = { Text("Delete Item") },
+                text = { Text("Are you sure you want to delete this item?") },
+                confirmButton = {
+                    TextButton(
+                        onClick = { viewModel.confirmDelete() },
+                        modifier = Modifier
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .testTag("btn_confirm_delete")
+                    ) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { viewModel.dismissDeleteConfirmation() },
+                        modifier = Modifier
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .testTag("btn_cancel_delete")
+                    ) {
+                        Text("Cancel")
+                    }
                 }
             )
         }
