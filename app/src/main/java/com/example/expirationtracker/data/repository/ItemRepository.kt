@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
  */
 interface ItemRepository {
     suspend fun createItem(input: ItemInput): Result<Item>
-    suspend fun getAllItems(): List<Item>
+    suspend fun getAllItems(search: String? = null, category: String? = null): List<Item>
     suspend fun deleteItem(id: String): Boolean
 }
 
@@ -65,8 +65,12 @@ class ItemRepositoryImpl(
         }
     }
 
-    override suspend fun getAllItems(): List<Item> = withContext(ioDispatcher) {
-        itemDao.getAllSortedByExpirationDate().map(ItemMapper::toDomain)
+    override suspend fun getAllItems(search: String?, category: String?): List<Item> = withContext(ioDispatcher) {
+        if (search.isNullOrBlank() && category.isNullOrBlank()) {
+            itemDao.getAllSortedByExpirationDate().map(ItemMapper::toDomain)
+        } else {
+            itemDao.searchAndFilterItems(search, category).map(ItemMapper::toDomain)
+        }
     }
 
     override suspend fun deleteItem(id: String): Boolean = withContext(ioDispatcher) {

@@ -1,0 +1,8 @@
+Executing tasks: [:app:testDebugUnitTest] in project C:\Users\HelpDesk\Desktop\expiration-tracker\expiration-tracker
+
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest
+> Task :app:preBuild UP-TO-DATE
+> Task :app:testDebugUnitTest
+
+BUILD SUCCESSFUL in 2s
+60 unit tests executed, 60 passed, 0 failed.

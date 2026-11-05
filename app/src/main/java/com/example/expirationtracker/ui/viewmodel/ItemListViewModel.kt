@@ -10,6 +10,8 @@ import com.example.expirationtracker.domain.model.Category
 import com.example.expirationtracker.domain.model.Item
 import com.example.expirationtracker.domain.model.ItemInput
 import com.example.expirationtracker.domain.usecase.GetSortedItemsWithStatusUseCase
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +27,9 @@ data class ItemListUiState(
     val notificationLeadTimeDays: Int = 7,
     val errorMessage: String? = null,
     val isAddDialogOpen: Boolean = false,
-    val addDialogError: String? = null
+    val addDialogError: String? = null,
+    val searchQuery: String = "",
+    val selectedCategory: String? = null
 )
 
 /**
@@ -35,7 +39,8 @@ data class ItemListUiState(
 class ItemListViewModel(
     private val repository: ItemRepository,
     private val getSortedItemsUseCase: GetSortedItemsWithStatusUseCase = GetSortedItemsWithStatusUseCase(),
-    private val apiController: ItemApiController = ItemApiController(repository = repository)
+    private val apiController: ItemApiController = ItemApiController(repository = repository),
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : ViewModel() {
 
     companion object {
@@ -50,26 +55,37 @@ class ItemListViewModel(
     }
 
     fun loadItems(currentDate: LocalDate = LocalDate.now()) {
-        SystemLogger.info(TAG, "Loading items from repository.")
+        val search = _uiState.value.searchQuery.ifBlank { null }
+        val category = _uiState.value.selectedCategory
+        SystemLogger.info(TAG, "Loading items from repository with search='$search', category='$category'.")
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
 
-        viewModelScope.launch {
+        viewModelScope.launch(mainDispatcher) {
             try {
-                val rawItems = repository.getAllItems()
-                val sortedWithStatus = getSortedItemsUseCase.execute(
-                    items = rawItems,
-                    currentDate = currentDate,
-                    leadTimeDays = _uiState.value.notificationLeadTimeDays
-                )
+                val response: ApiResponse<List<Item>> = apiController.getItems(search = search, category = category)
+                if (response.isSuccessful) {
+                    val rawItems = response.data ?: emptyList()
+                    val sortedWithStatus = getSortedItemsUseCase.execute(
+                        items = rawItems,
+                        currentDate = currentDate,
+                        leadTimeDays = _uiState.value.notificationLeadTimeDays
+                    )
 
-                _uiState.value = _uiState.value.copy(
-                    items = sortedWithStatus,
-                    isLoading = false
-                )
-                SystemLogger.info(
-                    TAG,
-                    "Loaded and rendered ${sortedWithStatus.size} items in chronological order."
-                )
+                    _uiState.value = _uiState.value.copy(
+                        items = sortedWithStatus,
+                        isLoading = false
+                    )
+                    SystemLogger.info(
+                        TAG,
+                        "Loaded and rendered ${sortedWithStatus.size} items matching search='$search', category='$category'."
+                    )
+                } else {
+                    val errorMsg = response.error?.message ?: "Failed to load items."
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = errorMsg
+                    )
+                }
             } catch (e: Exception) {
                 SystemLogger.error(TAG, "Failed to load items", e)
                 _uiState.value = _uiState.value.copy(
@@ -78,6 +94,19 @@ class ItemListViewModel(
                 )
             }
         }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        SystemLogger.info(TAG, "Search query changed: '$query'")
+        _uiState.value = _uiState.value.copy(searchQuery = query)
+        loadItems()
+    }
+
+    fun onCategorySelected(category: String?) {
+        SystemLogger.info(TAG, "Category filter selected: '$category'")
+        val categoryToSet = if (category.isNullOrBlank() || category.equals("All", ignoreCase = true)) null else category
+        _uiState.value = _uiState.value.copy(selectedCategory = categoryToSet)
+        loadItems()
     }
 
     fun openAddDialog() {
@@ -99,7 +128,7 @@ class ItemListViewModel(
         category: Category,
         storageLocation: String?
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(mainDispatcher) {
             val input = ItemInput(
                 title = title,
                 expirationDate = expirationDate,
@@ -130,7 +159,7 @@ class ItemListViewModel(
 
     fun deleteItem(id: String) {
         SystemLogger.info(TAG, "Requested deletion of item ID: $id")
-        viewModelScope.launch {
+        viewModelScope.launch(mainDispatcher) {
             val response = apiController.deleteItem(id)
             if (response.isSuccessful) {
                 SystemLogger.info(TAG, "Item successfully deleted via API: $id")

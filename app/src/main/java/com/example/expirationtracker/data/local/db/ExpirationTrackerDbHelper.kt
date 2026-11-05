@@ -10,7 +10,7 @@ import com.example.expirationtracker.core.logging.SystemLogger
  * SQLite Database Helper providing schema creation, index optimizations, migrations,
  * and transactional integrity per REQ-NF-003, REQ-NF-002, and TSK-001.
  */
-class ExpirationTrackerDbHelper(
+open class ExpirationTrackerDbHelper(
     context: Context,
     dbName: String = DATABASE_NAME
 ) : SQLiteOpenHelper(context, dbName, null, DATABASE_VERSION) {

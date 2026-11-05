@@ -127,7 +127,7 @@ class ItemApiController(
 
         // 1. Validate Category query parameter per openapi.yaml
         var categoryFilter: Category? = null
-        if (!category.isNullOrBlank()) {
+        if (!category.isNullOrBlank() && !category.equals("All", ignoreCase = true)) {
             categoryFilter = Category.fromDisplayName(category)
             if (categoryFilter == null) {
                 val errorMessage =
@@ -149,18 +149,23 @@ class ItemApiController(
 
         // 2. Fetch items exclusively via repository or memory abstraction
         val rawItems: List<Item> = if (repository != null) {
-            repository.getAllItems()
+            repository.getAllItems(
+                search = search,
+                category = categoryFilter?.name ?: if (category.equals("All", ignoreCase = true)) null else category
+            )
         } else {
             inMemoryItems.toList()
         }
 
-        // 3. Apply search and category filtering
+        // 3. Apply search and category filtering if inMemory
         var filteredItems = rawItems
-        if (!search.isNullOrBlank()) {
-            filteredItems = filteredItems.filter { it.title.contains(search, ignoreCase = true) }
-        }
-        if (categoryFilter != null) {
-            filteredItems = filteredItems.filter { it.category == categoryFilter }
+        if (repository == null) {
+            if (!search.isNullOrBlank()) {
+                filteredItems = filteredItems.filter { it.title.contains(search, ignoreCase = true) }
+            }
+            if (categoryFilter != null) {
+                filteredItems = filteredItems.filter { it.category == categoryFilter }
+            }
         }
 
         // 4. Sort chronologically and assign dynamic statusColor (delegated to UseCase)

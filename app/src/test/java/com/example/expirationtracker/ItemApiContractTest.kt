@@ -148,30 +148,57 @@ class ItemApiContractTest {
     }
 
     @Test
-    fun get_items_with_search_and_category_filtering_returns_200_ok() = runBlocking {
-        apiController.createItem(ItemInput("Aspirin 100mg", "2027-01-01", Category.MEDICINE))
-        apiController.createItem(ItemInput("Baby Aspirin", "2027-02-01", Category.MEDICINE))
-        apiController.createItem(ItemInput("Milk", "2026-11-15", Category.FOOD))
+    fun get_items_search_query_case_insensitive_returns_200_ok_matching_items() = runBlocking {
+        apiController.createItem(ItemInput("Aspirin 500mg", "2027-01-01", Category.MEDICINE))
+        apiController.createItem(ItemInput("aspirin extra", "2027-02-01", Category.MEDICINE))
+        apiController.createItem(ItemInput("Whole Milk", "2026-11-15", Category.FOOD))
 
-        // Search query filter
-        val searchResponse: ApiResponse<List<Item>> = apiController.getItems(search = "Aspirin", category = null)
-        assertEquals(200, searchResponse.status)
-        assertTrue(searchResponse.data!!.all { it.title.contains("Aspirin", ignoreCase = true) })
+        // Case-insensitive query "aSpIrIn"
+        val response: ApiResponse<List<Item>> = apiController.getItems(search = "aSpIrIn", category = null)
 
-        // Category filter
-        val categoryResponse: ApiResponse<List<Item>> = apiController.getItems(search = null, category = "Medicine")
-        assertEquals(200, categoryResponse.status)
-        assertTrue(categoryResponse.data!!.all { it.category == Category.MEDICINE })
-
-        // Combined filter
-        val combinedResponse: ApiResponse<List<Item>> = apiController.getItems(search = "Baby", category = "Medicine")
-        assertEquals(200, combinedResponse.status)
-        assertEquals(1, combinedResponse.data!!.size)
-        assertEquals("Baby Aspirin", combinedResponse.data!![0].title)
+        assertEquals("Expected HTTP 200 OK", 200, response.status)
+        assertTrue(response.isSuccessful)
+        assertNull(response.error)
+        val items = response.data
+        assertNotNull(items)
+        assertEquals(2, items!!.size)
+        assertTrue(items.all { it.title.contains("aspirin", ignoreCase = true) })
     }
 
     @Test
-    fun get_items_invalid_category_returns_400_bad_request_with_ErrorResponse() = runBlocking {
+    fun get_items_category_filter_returns_200_ok_strictly_matching_enum_category() = runBlocking {
+        apiController.createItem(ItemInput("Fresh Apples", "2026-12-01", Category.FOOD))
+        apiController.createItem(ItemInput("Cough Syrup", "2027-05-01", Category.MEDICINE))
+        apiController.createItem(ItemInput("Face Cream", "2027-08-01", Category.COSMETICS))
+        apiController.createItem(ItemInput("Floor Cleaner", "2028-01-01", Category.CHEMICALS))
+
+        val response: ApiResponse<List<Item>> = apiController.getItems(search = null, category = "Medicine")
+
+        assertEquals("Expected HTTP 200 OK", 200, response.status)
+        assertTrue(response.isSuccessful)
+        val items = response.data
+        assertNotNull(items)
+        assertEquals(1, items!!.size)
+        assertEquals(Category.MEDICINE, items[0].category)
+        assertEquals("Cough Syrup", items[0].title)
+    }
+
+    @Test
+    fun get_items_search_nonexistent_returns_200_ok_with_empty_array() = runBlocking {
+        apiController.createItem(ItemInput("Aspirin", "2027-01-01", Category.MEDICINE))
+
+        val response: ApiResponse<List<Item>> = apiController.getItems(search = "NonExistentItemQuery123", category = null)
+
+        assertEquals("Expected HTTP 200 OK for empty search result", 200, response.status)
+        assertTrue(response.isSuccessful)
+        assertNull(response.error)
+        val items = response.data
+        assertNotNull("Response data must be an empty list, not null", items)
+        assertTrue("Response list must be empty", items!!.isEmpty())
+    }
+
+    @Test
+    fun get_items_invalid_category_toys_returns_400_bad_request_with_ErrorResponse() = runBlocking {
         // openapi.yaml: GET /items?category=Toys -> 400 Bad Request
         // message: "Validation error: Invalid category 'Toys'. Allowed categories are Food, Medicine, Cosmetics, Chemicals."
         val response: ApiResponse<List<Item>> = apiController.getItems(search = null, category = "Toys")
