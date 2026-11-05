@@ -1,21 +1,21 @@
 Executing tasks: [:app:testDebugUnitTest, --tests, com.example.expirationtracker.ItemApiContractTest] in project C:\Users\HelpDesk\Desktop\expiration-tracker\expiration-tracker
 
-Reusing configuration cache.
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest --tests com.example.expirationtracker.ItemApiContractTest
 > Task :app:preBuild UP-TO-DATE
-> Task :app:preDebugUnitTestBuild UP-TO-DATE
 > Task :app:preDebugBuild UP-TO-DATE
-> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
-> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
 > Task :app:mapDebugSourceSetPaths UP-TO-DATE
-> Task :app:extractDeepLinksDebug UP-TO-DATE
-> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
 > Task :app:generateDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
 > Task :app:packageDebugResources UP-TO-DATE
-> Task :app:checkDebugAarMetadata UP-TO-DATE
-> Task :app:processDebugNavigationResources UP-TO-DATE
-> Task :app:compileDebugNavigationResources UP-TO-DATE
-> Task :app:parseDebugLocalResources UP-TO-DATE
 > Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
 > Task :app:generateDebugRFile UP-TO-DATE
 > Task :app:processDebugMainManifest UP-TO-DATE
 > Task :app:processDebugManifest UP-TO-DATE
@@ -27,75 +27,17 @@ Reusing configuration cache.
 > Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
 > Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
 > Task :app:compileDebugUnitTestKotlin UP-TO-DATE
-> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
-> Task :app:compressDebugUnitTestJavaRes UP-TO-DATE
-> Task :app:extractDebugUnitTestJavaRes UP-TO-DATE
-[2026-11-05T13:35:58.220819900Z] [INFO] [ItemApiController] Incoming API request: GET /api/v1/items, params={search='null', category='Toys'}
-[2026-11-05T13:35:58.233407100Z] [WARN] [ItemApiController] Outgoing API response: GET /api/v1/items -> HTTP 400 Bad Request: Validation error: Invalid category 'Toys'. Allowed categories are Food, Medicine, Cosmetics, Chemicals.
-[2026-11-05T13:35:58.245218Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Aspirin, expirationDate=2027-01-01, category=MEDICINE, storageLocation=First Aid Kit)
-[2026-11-05T13:35:58.250219600Z] [INFO] [ItemValidator] Validation succeeded for item 'Aspirin'.
-[2026-11-05T13:35:58.261977500Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-01-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.263977400Z] [INFO] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 201 Created (ID=3a15becb-2b84-4bca-ba59-4bc4f2383826)
-[2026-11-05T13:35:58.265979500Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=   , expirationDate=2027-01-01, category=FOOD, storageLocation=null)
-[2026-11-05T13:35:58.275521Z] [WARN] [ItemValidator] Validation failed for item '   ': Validation error: Item title cannot be empty or whitespace-only.
-[2026-11-05T13:35:58.275521Z] [INFO] [ItemValidator] Generated ErrorResponse for path '/api/v1/items': status=400, message='Validation error: Item title cannot be empty or whitespace-only.'
-[2026-11-05T13:35:58.275521Z] [WARN] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 400 Bad Request: Validation error: Item title cannot be empty or whitespace-only.
-[2026-11-05T13:35:58.280817600Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Aspirin 100mg, expirationDate=2027-01-01, category=MEDICINE, storageLocation=null)
-[2026-11-05T13:35:58.282086700Z] [INFO] [ItemValidator] Validation succeeded for item 'Aspirin 100mg'.
-[2026-11-05T13:35:58.282086700Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-01-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.282086700Z] [INFO] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 201 Created (ID=7b64763a-b884-44f2-af09-c516951f4c54)
-[2026-11-05T13:35:58.282086700Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Baby Aspirin, expirationDate=2027-02-01, category=MEDICINE, storageLocation=null)
-[2026-11-05T13:35:58.282086700Z] [INFO] [ItemValidator] Validation succeeded for item 'Baby Aspirin'.
-[2026-11-05T13:35:58.283400800Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-02-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.283400800Z] [INFO] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 201 Created (ID=1207b01e-fe43-41fe-bd44-824096e6f9e6)
-[2026-11-05T13:35:58.283400800Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Milk, expirationDate=2026-11-15, category=FOOD, storageLocation=null)
-[2026-11-05T13:35:58.284403100Z] [INFO] [ItemValidator] Validation succeeded for item 'Milk'.
-[2026-11-05T13:35:58.284403100Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2026-11-15 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.284403100Z] [INFO] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 201 Created (ID=e081d826-540e-4ea8-a985-cf109d3f2940)
-[2026-11-05T13:35:58.285401100Z] [INFO] [ItemApiController] Incoming API request: GET /api/v1/items, params={search='Aspirin', category='null'}
-[2026-11-05T13:35:58.286400500Z] [INFO] [GetSortedItemsWithStatusUseCase] Sorting and assigning status colors for 2 items.
-[2026-11-05T13:35:58.300615500Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-01-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.300615500Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-02-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.300615500Z] [INFO] [GetSortedItemsWithStatusUseCase] Successfully processed 2 items.
-[2026-11-05T13:35:58.302591400Z] [INFO] [ItemApiController] Outgoing API response: GET /api/v1/items -> HTTP 200 OK (2 items returned)
-[2026-11-05T13:35:58.303593300Z] [INFO] [ItemApiController] Incoming API request: GET /api/v1/items, params={search='null', category='Medicine'}
-[2026-11-05T13:35:58.303593300Z] [INFO] [GetSortedItemsWithStatusUseCase] Sorting and assigning status colors for 2 items.
-[2026-11-05T13:35:58.303593300Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-01-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.303593300Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-02-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.303593300Z] [INFO] [GetSortedItemsWithStatusUseCase] Successfully processed 2 items.
-[2026-11-05T13:35:58.303593300Z] [INFO] [ItemApiController] Outgoing API response: GET /api/v1/items -> HTTP 200 OK (2 items returned)
-[2026-11-05T13:35:58.304592200Z] [INFO] [ItemApiController] Incoming API request: GET /api/v1/items, params={search='Baby', category='Medicine'}
-[2026-11-05T13:35:58.304592200Z] [INFO] [GetSortedItemsWithStatusUseCase] Sorting and assigning status colors for 1 items.
-[2026-11-05T13:35:58.304592200Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2027-02-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.305786200Z] [INFO] [GetSortedItemsWithStatusUseCase] Successfully processed 1 items.
-[2026-11-05T13:35:58.305786200Z] [INFO] [ItemApiController] Outgoing API response: GET /api/v1/items -> HTTP 200 OK (1 items returned)
-[2026-11-05T13:35:58.308318500Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Far Future Item, expirationDate=2028-01-01, category=FOOD, storageLocation=null)
-[2026-11-05T13:35:58.309330800Z] [INFO] [ItemValidator] Validation succeeded for item 'Far Future Item'.
-[2026-11-05T13:35:58.309330800Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2028-01-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.310330100Z] [INFO] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 201 Created (ID=b5ca9487-cc70-496c-b9c5-a14d7de30b59)
-[2026-11-05T13:35:58.310330100Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Soon Expiring Item, expirationDate=2026-11-10, category=MEDICINE, storageLocation=null)
-[2026-11-05T13:35:58.310330100Z] [INFO] [ItemValidator] Validation succeeded for item 'Soon Expiring Item'.
-[2026-11-05T13:35:58.310330100Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2026-11-10 (today=2026-11-05, leadTime=7): ORANGE
-[2026-11-05T13:35:58.311330900Z] [INFO] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 201 Created (ID=06471fd2-3fa1-4006-ba4d-708cc61f9d10)
-[2026-11-05T13:35:58.311330900Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Expired Item, expirationDate=2026-11-01, category=COSMETICS, storageLocation=null)
-[2026-11-05T13:35:58.311330900Z] [INFO] [ItemValidator] Validation succeeded for item 'Expired Item'.
-[2026-11-05T13:35:58.311330900Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2026-11-01 (today=2026-11-05, leadTime=7): RED
-[2026-11-05T13:35:58.312330100Z] [INFO] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 201 Created (ID=53a3875d-e3b7-4659-b16d-9ea7ab05fc60)
-[2026-11-05T13:35:58.312330100Z] [INFO] [ItemApiController] Incoming API request: GET /api/v1/items, params={search='null', category='null'}
-[2026-11-05T13:35:58.312330100Z] [INFO] [GetSortedItemsWithStatusUseCase] Sorting and assigning status colors for 3 items.
-[2026-11-05T13:35:58.312330100Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2026-11-01 (today=2026-11-05, leadTime=7): RED
-[2026-11-05T13:35:58.313329500Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2026-11-10 (today=2026-11-05, leadTime=7): ORANGE
-[2026-11-05T13:35:58.313329500Z] [DEBUG] [StatusColorCalculator] Calculated status for date=2028-01-01 (today=2026-11-05, leadTime=7): GREEN
-[2026-11-05T13:35:58.313329500Z] [INFO] [GetSortedItemsWithStatusUseCase] Successfully processed 3 items.
-[2026-11-05T13:35:58.313329500Z] [INFO] [ItemApiController] Outgoing API response: GET /api/v1/items -> HTTP 200 OK (3 items returned)
-[2026-11-05T13:35:58.316627300Z] [INFO] [ItemApiController] Incoming API request: POST /api/v1/items, body=ItemInput(title=Milk, expirationDate=invalid-date, category=FOOD, storageLocation=null)
-[2026-11-05T13:35:58.316627300Z] [WARN] [ItemValidator] Validation failed for item 'Milk': Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
-[2026-11-05T13:35:58.316627300Z] [INFO] [ItemValidator] Generated ErrorResponse for path '/api/v1/items': status=400, message='Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.'
-[2026-11-05T13:35:58.316627300Z] [WARN] [ItemApiController] Outgoing API response: POST /api/v1/items -> HTTP 400 Bad Request: Validation error: Expiration date must be a valid calendar date in YYYY-MM-DD format.
+> Task :app:processDebugUnitTestJavaRes NO-SOURCE
 > Task :app:testDebugUnitTest
-BUILD SUCCESSFUL in 2s
-25 actionable tasks: 1 executed, 24 up-to-date
-Configuration cache entry reused.
 
-Build Analyzer results available
-3:35:58 PM: Execution finished ':app:testDebugUnitTest --tests "com.example.expirationtracker.ItemApiContractTest"'.
+com.example.expirationtracker.ItemApiContractTest > post_item_valid_returns_201_created_with_uuid_and_statusColor PASSED
+com.example.expirationtracker.ItemApiContractTest > post_item_invalid_empty_title_returns_400_bad_request_with_ErrorResponse PASSED
+com.example.expirationtracker.ItemApiContractTest > post_item_invalid_date_format_returns_400_bad_request_with_ErrorResponse PASSED
+com.example.expirationtracker.ItemApiContractTest > get_items_valid_returns_200_ok_with_chronologically_sorted_items PASSED
+com.example.expirationtracker.ItemApiContractTest > get_items_with_search_and_category_filtering_returns_200_ok PASSED
+com.example.expirationtracker.ItemApiContractTest > get_items_invalid_category_returns_400_bad_request_with_ErrorResponse PASSED
+com.example.expirationtracker.ItemApiContractTest > delete_item_existing_id_returns_204_no_content_and_permanently_removes_item PASSED
+com.example.expirationtracker.ItemApiContractTest > delete_item_non_existent_id_returns_404_not_found_with_ErrorResponse PASSED
+
+BUILD SUCCESSFUL in 2s
+23 actionable tasks: 1 executed, 22 up-to-date

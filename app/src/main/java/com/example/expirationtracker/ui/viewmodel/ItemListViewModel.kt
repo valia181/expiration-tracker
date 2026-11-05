@@ -131,12 +131,14 @@ class ItemListViewModel(
     fun deleteItem(id: String) {
         SystemLogger.info(TAG, "Requested deletion of item ID: $id")
         viewModelScope.launch {
-            val success = repository.deleteItem(id)
-            if (success) {
-                SystemLogger.info(TAG, "Item successfully deleted: $id")
+            val response = apiController.deleteItem(id)
+            if (response.isSuccessful) {
+                SystemLogger.info(TAG, "Item successfully deleted via API: $id")
                 loadItems()
             } else {
-                SystemLogger.warn(TAG, "Failed to delete item: $id")
+                val errorMsg = response.error?.message ?: "Failed to delete item: $id"
+                SystemLogger.warn(TAG, "Failed to delete item via API: $errorMsg")
+                _uiState.value = _uiState.value.copy(errorMessage = errorMsg)
             }
         }
     }

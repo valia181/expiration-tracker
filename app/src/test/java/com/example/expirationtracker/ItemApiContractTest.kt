@@ -23,8 +23,10 @@ import java.util.UUID
  * 2. POST /api/v1/items (Invalid): Returns 400 Bad Request with ErrorResponse model (timestamp, status, error, message, path).
  * 3. GET /api/v1/items (Valid): Returns 200 OK. Body is JSON array of Items sorted chronologically. Supports search & category filters.
  * 4. GET /api/v1/items (Invalid category): Returns 400 Bad Request with ErrorResponse for unknown category (e.g. 'Toys').
+ * 5. DELETE /api/v1/items/{id} (Valid): Returns 204 No Content for existing ID and permanently removes item.
+ * 6. DELETE /api/v1/items/{id} (Non-existent ID): Returns 404 Not Found with ErrorResponse schema.
  *
- * CRITICAL TDD RULE: Fails on compilation because ItemApiController does not exist yet.
+ * CRITICAL TDD RULE: Fails on compilation because DELETE endpoint is not implemented yet.
  */
 class ItemApiContractTest {
 
@@ -187,5 +189,55 @@ class ItemApiContractTest {
             "Message must mention invalid category and allowed categories",
             error.message.contains("Toys") && error.message.contains("Food, Medicine, Cosmetics, Chemicals")
         )
+    }
+
+    // ==========================================
+    // 3. DELETE /api/v1/items/{id} Contract Tests
+    // ==========================================
+
+    @Test
+    fun delete_item_existing_id_returns_204_no_content_and_permanently_removes_item() = runBlocking {
+        // openapi.yaml: DELETE /items/{id} -> 204 No Content
+        val createResponse = apiController.createItem(
+            ItemInput("Item To Delete", "2027-01-01", Category.FOOD)
+        )
+        val createdItem = createResponse.data
+        assertNotNull("Created item must not be null", createdItem)
+        val itemId = createdItem!!.id
+
+        val deleteResponse: ApiResponse<Unit> = apiController.deleteItem(itemId)
+
+        assertEquals("Expected HTTP 204 No Content", 204, deleteResponse.status)
+        assertTrue("Response should indicate success", deleteResponse.isSuccessful)
+        assertNull("Data should be null for 204 No Content", deleteResponse.data)
+        assertNull("Error should be null for successful deletion", deleteResponse.error)
+
+        // Verify permanently removed: GET /api/v1/items does not contain the item
+        val getResponse = apiController.getItems()
+        val currentItems = getResponse.data ?: emptyList()
+        assertFalse("Deleted item must not exist in items list", currentItems.any { it.id == itemId })
+    }
+
+    @Test
+    fun delete_item_non_existent_id_returns_404_not_found_with_ErrorResponse() = runBlocking {
+        // openapi.yaml: DELETE /items/{id} -> 404 Not Found with ErrorResponse
+        val nonExistentId = UUID.randomUUID().toString()
+
+        val deleteResponse: ApiResponse<Unit> = apiController.deleteItem(nonExistentId)
+
+        assertEquals("Expected HTTP 404 Not Found", 404, deleteResponse.status)
+        assertFalse("Response should indicate failure", deleteResponse.isSuccessful)
+        assertNull("Data payload should be null for error response", deleteResponse.data)
+
+        val error = deleteResponse.error
+        assertNotNull("Body must contain ErrorResponse", error)
+        assertEquals(404, error!!.status)
+        assertEquals("Not Found", error.error)
+        assertEquals("/api/v1/items/$nonExistentId", error.path)
+        assertTrue(
+            "Error message must contain item ID or indicate not found",
+            error.message.contains(nonExistentId) || error.message.contains("not found", ignoreCase = true)
+        )
+        assertNotNull("Timestamp must be present", error.timestamp)
     }
 }

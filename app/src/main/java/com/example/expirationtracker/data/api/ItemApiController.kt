@@ -18,6 +18,7 @@ import java.util.UUID
  * Controller simulating the REST API endpoints specified in openapi.yaml:
  * - POST /api/v1/items
  * - GET /api/v1/items
+ * - DELETE /api/v1/items/{id}
  *
  * Clean Architecture Guarantee:
  * - Completely decoupled from SQLite database details (communicates strictly via ItemRepository).
@@ -174,5 +175,48 @@ class ItemApiController(
             "Outgoing API response: $method $path -> HTTP ${HttpStatus.OK} ${HttpStatus.REASON_OK} (${processedItems.size} items returned)"
         )
         return ApiResponse(status = HttpStatus.OK, data = processedItems)
+    }
+
+    /**
+     * DELETE /api/v1/items/{id}: Delete an item by ID.
+     * Consumes item id path parameter.
+     * Returns ApiResponse(204, Unit) on success or ApiResponse(404, ErrorResponse) if missing.
+     */
+    suspend fun deleteItem(id: String): ApiResponse<Unit> {
+        val method = "DELETE"
+        val path = "$PATH_ITEMS/$id"
+        SystemLogger.info(TAG, "Incoming API request: $method $path, id='$id'")
+
+        val deleted: Boolean = if (repository != null) {
+            repository.deleteItem(id)
+        } else {
+            val existed = inMemoryItems.any { it.id == id }
+            if (existed) {
+                inMemoryItems.removeAll { it.id == id }
+            }
+            existed
+        }
+
+        return if (deleted) {
+            SystemLogger.info(
+                TAG,
+                "Outgoing API response: $method $path -> HTTP ${HttpStatus.NO_CONTENT} ${HttpStatus.NO_CONTENT}"
+            )
+            ApiResponse(status = HttpStatus.NO_CONTENT)
+        } else {
+            val errorMessage = "Item with ID '$id' was not found."
+            val errorResponse = ErrorResponse(
+                timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                status = HttpStatus.NOT_FOUND,
+                error = HttpStatus.REASON_NOT_FOUND,
+                message = errorMessage,
+                path = path
+            )
+            SystemLogger.warn(
+                TAG,
+                "Outgoing API response: $method $path -> HTTP ${HttpStatus.NOT_FOUND} ${HttpStatus.REASON_NOT_FOUND}: $errorMessage"
+            )
+            ApiResponse(status = HttpStatus.NOT_FOUND, error = errorResponse)
+        }
     }
 }
