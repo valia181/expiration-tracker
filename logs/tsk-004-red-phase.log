@@ -1,0 +1,94 @@
+Executing tasks: [:app:testDebugUnitTest, --tests, com.example.expirationtracker.ItemChronologicalSortingAndStatusTest] in project C:\Users\HelpDesk\Desktop\expiration-tracker\expiration-tracker
+
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest --tests com.example.expirationtracker.ItemChronologicalSortingAndStatusTest
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:compressDebugJavaRes UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:compileDebugUnitTestKotlin FAILED
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:3:45 Unresolved reference 'calculator'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:7:45 Unresolved reference 'usecase'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:30:44 Unresolved reference 'StatusColorCalculator'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:31:49 Unresolved reference 'GetSortedItemsWithStatusUseCase'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:35:28 Unresolved reference 'StatusColorCalculator'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:36:33 Unresolved reference 'GetSortedItemsWithStatusUseCase'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:47:39 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:59:39 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:70:39 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:82:39 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:94:39 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:110:39 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:126:39 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:140:44 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:144:44 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:148:45 Unresolved reference 'calculateStatus'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:187:48 Unresolved reference 'execute'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:195:34 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:195:48 Unresolved reference 'title'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:196:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:196:50 Unresolved reference 'expirationDate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:197:39 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:197:53 Unresolved reference 'statusColor'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:199:37 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:199:51 Unresolved reference 'title'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:200:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:200:50 Unresolved reference 'expirationDate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:201:42 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:201:56 Unresolved reference 'statusColor'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:203:40 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:203:54 Unresolved reference 'title'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:204:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:204:50 Unresolved reference 'expirationDate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:205:42 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:205:56 Unresolved reference 'statusColor'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:207:37 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:207:51 Unresolved reference 'title'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:208:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:208:50 Unresolved reference 'expirationDate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:209:41 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:209:55 Unresolved reference 'statusColor'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:217:44 Unresolved reference 'execute'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:224:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:224:46 Unresolved reference 'expirationDate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:225:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:225:46 Unresolved reference 'expirationDate'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:226:42 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:226:52 Unresolved reference 'statusColor'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:227:42 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:227:52 Unresolved reference 'statusColor'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:232:44 Unresolved reference 'execute'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemChronologicalSortingAndStatusTest.kt:233:21 Cannot infer type for this parameter. Specify it explicitly.
+FAILURE: Build failed with an exception.
+* What went wrong:
+Execution failed for task ':app:compileDebugUnitTestKotlin' (registered by plugin 'com.android.internal.application').
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+BUILD FAILED in 4s
+22 actionable tasks: 1 executed, 21 up-to-date
+Configuration cache entry stored.

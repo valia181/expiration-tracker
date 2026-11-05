@@ -5,23 +5,28 @@ import java.io.FileWriter
 import java.io.PrintWriter
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.Executors
 
 /**
  * System Logger implementing the mandatory system logging infrastructure per TSK-001 & SRS Technical Constraints.
- * Logs are recorded with timestamps, level, tag, and message, and written to persistent log files.
+ * Logs are recorded with timestamps, level, tag, and message.
+ *
+ * REFACTOR: File I/O persistence is delegated to a dedicated background single-thread executor
+ * to guarantee that logging NEVER blocks the main/UI thread (ensuring 60fps per REQ-NF-001).
  */
 object SystemLogger {
 
     enum class Level { DEBUG, INFO, WARN, ERROR }
 
+    @Volatile
     private var logFile: File? = null
-    private val lock = Any()
+    private val logExecutor = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable, "system-logger-thread").apply { isDaemon = true }
+    }
 
     fun init(targetFile: File) {
-        synchronized(lock) {
-            targetFile.parentFile?.mkdirs()
-            logFile = targetFile
-        }
+        targetFile.parentFile?.mkdirs()
+        logFile = targetFile
         info("SystemLogger", "System logging initialized. Target file: ${targetFile.absolutePath}")
     }
 
@@ -38,16 +43,15 @@ object SystemLogger {
         println(formatted)
         throwable?.printStackTrace()
 
-        synchronized(lock) {
-            logFile?.let { file ->
-                try {
-                    PrintWriter(FileWriter(file, true)).use { writer ->
-                        writer.println(formatted)
-                        throwable?.printStackTrace(writer)
-                    }
-                } catch (e: Exception) {
-                    System.err.println("Failed to write to system log file: ${e.message}")
+        val target = logFile ?: return
+        logExecutor.execute {
+            try {
+                PrintWriter(FileWriter(target, true)).use { writer ->
+                    writer.println(formatted)
+                    throwable?.printStackTrace(writer)
                 }
+            } catch (e: Exception) {
+                System.err.println("Failed to write to system log file: ${e.message}")
             }
         }
     }

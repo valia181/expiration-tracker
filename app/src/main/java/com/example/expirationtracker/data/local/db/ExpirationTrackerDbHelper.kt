@@ -3,11 +3,12 @@ package com.example.expirationtracker.data.local.db
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import androidx.core.database.sqlite.transaction
 import com.example.expirationtracker.core.logging.SystemLogger
 
 /**
- * SQLite Database Helper providing schema creation, migrations, and transactional integrity
- * per REQ-NF-003 and TSK-001.
+ * SQLite Database Helper providing schema creation, index optimizations, migrations,
+ * and transactional integrity per REQ-NF-003, REQ-NF-002, and TSK-001.
  */
 class ExpirationTrackerDbHelper(
     context: Context,
@@ -27,6 +28,10 @@ class ExpirationTrackerDbHelper(
         const val COLUMN_STORAGE_LOCATION = "storage_location"
         const val COLUMN_STATUS_COLOR = "status_color"
 
+        // Index on expiration_date for <100ms chronological sorting and date filtering (REQ-NF-002)
+        const val INDEX_EXPIRATION_DATE = "idx_items_expiration_date"
+        const val INDEX_CATEGORY = "idx_items_category"
+
         // Table: settings
         const val TABLE_SETTINGS = "settings"
         const val COLUMN_SETTING_KEY = "setting_key"
@@ -45,6 +50,16 @@ class ExpirationTrackerDbHelper(
             );
         """
 
+        private const val SQL_CREATE_INDEX_EXPIRATION_DATE = """
+            CREATE INDEX IF NOT EXISTS $INDEX_EXPIRATION_DATE 
+            ON $TABLE_ITEMS ($COLUMN_EXPIRATION_DATE ASC);
+        """
+
+        private const val SQL_CREATE_INDEX_CATEGORY = """
+            CREATE INDEX IF NOT EXISTS $INDEX_CATEGORY 
+            ON $TABLE_ITEMS ($COLUMN_CATEGORY);
+        """
+
         private const val SQL_CREATE_SETTINGS_TABLE = """
             CREATE TABLE $TABLE_SETTINGS (
                 $COLUMN_SETTING_KEY TEXT PRIMARY KEY NOT NULL,
@@ -59,19 +74,19 @@ class ExpirationTrackerDbHelper(
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        SystemLogger.info("ExpirationTrackerDbHelper", "Creating database tables: $TABLE_ITEMS, $TABLE_SETTINGS")
-        db.beginTransaction()
+        SystemLogger.info("ExpirationTrackerDbHelper", "Creating database schema and performance indexes.")
         try {
-            db.execSQL(SQL_CREATE_ITEMS_TABLE)
-            db.execSQL(SQL_CREATE_SETTINGS_TABLE)
-            db.execSQL(SQL_INSERT_DEFAULT_SETTINGS)
-            db.setTransactionSuccessful()
-            SystemLogger.info("ExpirationTrackerDbHelper", "Database schema created successfully.")
+            db.transaction {
+                execSQL(SQL_CREATE_ITEMS_TABLE)
+                execSQL(SQL_CREATE_INDEX_EXPIRATION_DATE)
+                execSQL(SQL_CREATE_INDEX_CATEGORY)
+                execSQL(SQL_CREATE_SETTINGS_TABLE)
+                execSQL(SQL_INSERT_DEFAULT_SETTINGS)
+            }
+            SystemLogger.info("ExpirationTrackerDbHelper", "Database schema and indexes created successfully.")
         } catch (e: Exception) {
             SystemLogger.error("ExpirationTrackerDbHelper", "Failed to create database schema", e)
             throw e
-        } finally {
-            db.endTransaction()
         }
     }
 

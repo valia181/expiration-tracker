@@ -8,37 +8,41 @@ import com.example.expirationtracker.domain.model.ItemInput
 import com.example.expirationtracker.domain.model.StatusColor
 import com.example.expirationtracker.domain.validation.ItemValidator
 import com.example.expirationtracker.domain.validation.ValidationResult
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Repository interface defining item data access operations.
  * Traceability: REQ-NF-007 (Architecture separation).
  */
 interface ItemRepository {
-    fun createItem(input: ItemInput): Result<Item>
-    fun getAllItems(): List<Item>
-    fun deleteItem(id: String): Boolean
+    suspend fun createItem(input: ItemInput): Result<Item>
+    suspend fun getAllItems(): List<Item>
+    suspend fun deleteItem(id: String): Boolean
 }
 
 /**
- * Concrete ItemRepository implementation delegating to SQLite DAO and validating via ItemValidator.
+ * Concrete ItemRepository implementation delegating to SQLite DAO with IO dispatcher execution.
  */
 class ItemRepositoryImpl(
     private val itemDao: ItemDao,
-    private val validator: ItemValidator = ItemValidator()
+    private val validator: ItemValidator = ItemValidator(),
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ItemRepository {
 
     companion object {
         private const val TAG = "ItemRepository"
     }
 
-    override fun createItem(input: ItemInput): Result<Item> {
+    override suspend fun createItem(input: ItemInput): Result<Item> = withContext(ioDispatcher) {
         SystemLogger.info(TAG, "Attempting to create item with title: '${input.title}'")
 
         val validationResult: ValidationResult = validator.validate(input)
         if (!validationResult.isValid) {
             val errorMsg = validationResult.errors.joinToString("; ")
             SystemLogger.warn(TAG, "Item creation aborted: $errorMsg")
-            return Result.failure(IllegalArgumentException(errorMsg))
+            return@withContext Result.failure(IllegalArgumentException(errorMsg))
         }
 
         val domainItem = Item(
@@ -51,7 +55,7 @@ class ItemRepositoryImpl(
 
         val entity = ItemMapper.toEntity(domainItem)
 
-        return try {
+        try {
             itemDao.insert(entity)
             SystemLogger.info(TAG, "Item successfully stored with ID: ${domainItem.id}")
             Result.success(domainItem)
@@ -61,12 +65,12 @@ class ItemRepositoryImpl(
         }
     }
 
-    override fun getAllItems(): List<Item> {
-        return itemDao.getAllSortedByExpirationDate().map(ItemMapper::toDomain)
+    override suspend fun getAllItems(): List<Item> = withContext(ioDispatcher) {
+        itemDao.getAllSortedByExpirationDate().map(ItemMapper::toDomain)
     }
 
-    override fun deleteItem(id: String): Boolean {
+    override suspend fun deleteItem(id: String): Boolean = withContext(ioDispatcher) {
         SystemLogger.info(TAG, "Deleting item id: $id")
-        return itemDao.deleteById(id) > 0
+        itemDao.deleteById(id) > 0
     }
 }

@@ -6,8 +6,13 @@ package com.example.expirationtracker.domain.model
  * - Orange: Approaching expiration within global notification lead time window
  * - Green: Safe (Date > Today + Lead Time)
  */
-enum class StatusColor {
-    RED,
-    ORANGE,
-    GREEN
+enum class StatusColor(val displayName: String) {
+    RED("Red"),
+    ORANGE("Orange"),
+    GREEN("Green");
+
+    companion object {
+        fun fromDisplayName(name: String): StatusColor? =
+            entries.firstOrNull { it.displayName.equals(name, ignoreCase = true) }
+    }
 }

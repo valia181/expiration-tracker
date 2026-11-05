@@ -9,15 +9,27 @@ import com.example.expirationtracker.data.local.entity.ItemEntity
 
 /**
  * Data Access Object (DAO) for items table implementing SQLite operations with transactional integrity.
- * Traceability: TSK-001, REQ-NF-003.
+ * Traceability: TSK-001, REQ-NF-003, REQ-NF-002 (<100ms query performance).
  */
 class ItemDao(private val dbHelper: ExpirationTrackerDbHelper) {
+
+    companion object {
+        private const val TAG = "ItemDao"
+        private val ALL_COLUMNS = arrayOf(
+            ExpirationTrackerDbHelper.COLUMN_ID,
+            ExpirationTrackerDbHelper.COLUMN_TITLE,
+            ExpirationTrackerDbHelper.COLUMN_EXPIRATION_DATE,
+            ExpirationTrackerDbHelper.COLUMN_CATEGORY,
+            ExpirationTrackerDbHelper.COLUMN_STORAGE_LOCATION,
+            ExpirationTrackerDbHelper.COLUMN_STATUS_COLOR
+        )
+    }
 
     fun insert(item: ItemEntity): Long {
         val db = dbHelper.writableDatabase
         var rowId = -1L
         db.transaction {
-            val values = ContentValues().apply {
+            val values = ContentValues(6).apply {
                 put(ExpirationTrackerDbHelper.COLUMN_ID, item.id)
                 put(ExpirationTrackerDbHelper.COLUMN_TITLE, item.title)
                 put(ExpirationTrackerDbHelper.COLUMN_EXPIRATION_DATE, item.expirationDate)
@@ -27,16 +39,18 @@ class ItemDao(private val dbHelper: ExpirationTrackerDbHelper) {
             }
             rowId = insertOrThrow(ExpirationTrackerDbHelper.TABLE_ITEMS, null, values)
         }
-        SystemLogger.info("ItemDao", "Inserted item with id: ${item.id}")
+        SystemLogger.info(TAG, "Inserted item with id: ${item.id}")
         return rowId
     }
 
     fun getAllSortedByExpirationDate(): List<ItemEntity> {
+        val startTime = System.currentTimeMillis()
         val db = dbHelper.readableDatabase
         val items = mutableListOf<ItemEntity>()
+
         val cursor: Cursor = db.query(
             ExpirationTrackerDbHelper.TABLE_ITEMS,
-            null,
+            ALL_COLUMNS,
             null,
             null,
             null,
@@ -44,11 +58,29 @@ class ItemDao(private val dbHelper: ExpirationTrackerDbHelper) {
             "${ExpirationTrackerDbHelper.COLUMN_EXPIRATION_DATE} ASC"
         )
         cursor.use {
+            val idCol = it.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_ID)
+            val titleCol = it.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_TITLE)
+            val expCol = it.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_EXPIRATION_DATE)
+            val catCol = it.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_CATEGORY)
+            val locCol = it.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_STORAGE_LOCATION)
+            val statusCol = it.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_STATUS_COLOR)
+
             while (it.moveToNext()) {
-                items.add(cursorToEntity(it))
+                val loc = if (it.isNull(locCol)) null else it.getString(locCol)
+                items.add(
+                    ItemEntity(
+                        id = it.getString(idCol),
+                        title = it.getString(titleCol),
+                        expirationDate = it.getString(expCol),
+                        category = it.getString(catCol),
+                        storageLocation = loc,
+                        statusColor = it.getString(statusCol)
+                    )
+                )
             }
         }
-        SystemLogger.debug("ItemDao", "Loaded ${items.size} items from database.")
+        val duration = System.currentTimeMillis() - startTime
+        SystemLogger.debug(TAG, "Loaded ${items.size} items from database in ${duration}ms.")
         return items
     }
 
@@ -62,7 +94,7 @@ class ItemDao(private val dbHelper: ExpirationTrackerDbHelper) {
                 arrayOf(id)
             )
         }
-        SystemLogger.info("ItemDao", "Deleted item id: $id, affected rows: $deletedRows")
+        SystemLogger.info(TAG, "Deleted item id: $id, affected rows: $deletedRows")
         return deletedRows
     }
 
@@ -72,29 +104,7 @@ class ItemDao(private val dbHelper: ExpirationTrackerDbHelper) {
         db.transaction {
             deletedRows = delete(ExpirationTrackerDbHelper.TABLE_ITEMS, null, null)
         }
-        SystemLogger.info("ItemDao", "Cleared all items from database. Affected rows: $deletedRows")
+        SystemLogger.info(TAG, "Cleared all items from database. Affected rows: $deletedRows")
         return deletedRows
-    }
-
-    private fun cursorToEntity(cursor: Cursor): ItemEntity {
-        val id = cursor.getString(cursor.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_ID))
-        val title = cursor.getString(cursor.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_TITLE))
-        val expirationDate = cursor.getString(cursor.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_EXPIRATION_DATE))
-        val category = cursor.getString(cursor.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_CATEGORY))
-        val storageLocation = if (cursor.isNull(cursor.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_STORAGE_LOCATION))) {
-            null
-        } else {
-            cursor.getString(cursor.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_STORAGE_LOCATION))
-        }
-        val statusColor = cursor.getString(cursor.getColumnIndexOrThrow(ExpirationTrackerDbHelper.COLUMN_STATUS_COLOR))
-
-        return ItemEntity(
-            id = id,
-            title = title,
-            expirationDate = expirationDate,
-            category = category,
-            storageLocation = storageLocation,
-            statusColor = statusColor
-        )
     }
 }
