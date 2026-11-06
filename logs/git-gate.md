@@ -19,3 +19,21 @@
     - Confirmed item validation logic and OpenAPI contract alignment.
     - Verified that system logging infrastructure generates correct logs.
     - All unit and contract tests passed successfully.
+
+## GATE-02: Pre-Release Validation Gate
+
+- **Ticket ID**: GATE-02
+- **Type**: Gate
+- **Requirement ID**: REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006
+- **Assignee**: Human
+- **Dependencies**: TSK-007, TSK-009, TSK-013, TSK-015
+- **Status**: GO (Approved)
+- **Date**: 2026-11-06
+- **Description**: Perform manual validation of the integrated application. Verify that all features function correctly (including item deletion, search/filtering, notifications, and import/export), and the UI is stable. This gate must pass before final performance and accessibility verification[cite: 22].
+- **Verification & Review Notes**:
+  - Successfully performed manual validation of the integrated application.
+  - Verified that item deletion works permanently and updates the UI in real-time.
+  - Confirmed search functionality is case-insensitive and category filter chips correctly isolate items.
+  - Validated that background notifications are scheduled via WorkManager and trigger correctly based on the global lead time.
+  - Tested JSON export and import functionalities using the Android Storage Access Framework (SAF); data is serialized and restored correctly.
+  - Confirmed UI is stable, responsive, and ready for final performance and accessibility verification.
