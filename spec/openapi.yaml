@@ -112,6 +112,40 @@ paths:
                 error: "Not Found"
                 message: "Item with ID '123e4567-e89b-12d3-a456-426614174000' was not found."
                 path: "/api/v1/items/123e4567-e89b-12d3-a456-426614174000"
+    put:
+      summary: Update an existing item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemInput'
+      responses:
+        '200':
+          description: Item successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /settings:
     get:
       summary: Get global settings

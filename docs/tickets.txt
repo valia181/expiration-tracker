@@ -177,3 +177,23 @@ TSK-016: Performance and Accessibility Verification
 • Assignee: Joint
 • Dependencies: GATE-02
 • Description: Verify that the application maintains 60 fps during list scrolling, database queries complete within 100ms, touch targets are at least 48x48 dp, and color contrast ratios meet WCAG 2.1 Level AA standards.
+
+SPEC-ADDENDUM-GATE: Addendum 01 Approval
+• Ticket ID: SPEC-ADDENDUM-GATE
+• Type: Gate
+• Assignee: Human
+• Description: Review and approve addendum-01.md for Item Editing.
+
+TSK-017: Test Suite for Item Editing
+• Ticket ID: TSK-017
+• Type: Test
+• Requirement ID: REQ-F-012
+• Dependencies: SPEC-ADDENDUM-GATE
+• Description: Write API Contract tests for PUT /api/v1/items/{id} (200, 400, 404) and UI tests for the edit functionality.
+
+TSK-018: Implement Item Editing
+• Ticket ID: TSK-018
+• Type: Feature
+• Requirement ID: REQ-F-012
+• Dependencies: TSK-017
+• Description: Implement ItemDao.update, ItemApiController PUT endpoint, and connect the UI edit form.
