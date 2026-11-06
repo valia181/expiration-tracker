@@ -1,0 +1,11 @@
+Executing tasks: [:app:compileDebugAndroidTestKotlin] in project C:\Users\HelpDesk/Desktop\expiration-tracker\expiration-tracker
+
+Calculating task graph as no cached configuration is available for tasks: :app:compileDebugAndroidTestKotlin
+> Task :app:preBuild UP-TO-DATE
+> Task :app:compileDebugAndroidTestKotlin FAILED
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/androidTest/java/com/example/expirationtracker/NotificationSchedulerTest.kt:17:38 Unresolved reference 'notification'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/androidTest/java/com/example/expirationtracker/NotificationSchedulerTest.kt:18:38 Unresolved reference 'notification'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/androidTest/java/com/example/expirationtracker/NotificationSchedulerTest.kt:62:9 Unresolved reference 'NotificationScheduler'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/androidTest/java/com/example/expirationtracker/NotificationSchedulerTest.kt:87:64 Unresolved reference 'ExpirationNotificationWorker'.
+
+BUILD FAILED in 2s
