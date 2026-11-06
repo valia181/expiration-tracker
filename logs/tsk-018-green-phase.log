@@ -1,0 +1,15 @@
+Executing tasks: [:app:testDebugUnitTest, :app:compileDebugAndroidTestKotlin, :app:assembleDebug] in project C:\Users\HelpDesk/Desktop\expiration-tracker\expiration-tracker
+
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest, :app:compileDebugAndroidTestKotlin, :app:assembleDebug
+> Task :app:preBuild UP-TO-DATE
+> Task :app:compileDebugAndroidTestKotlin
+> Task :app:assembleDebug
+> Task :app:testDebugUnitTest
+
+com.example.expirationtracker.ItemEditApiContractTest > put_item_valid_returns_200_ok_with_updated_item PASSED
+com.example.expirationtracker.ItemEditApiContractTest > put_item_invalid_empty_title_returns_400_bad_request_with_ErrorResponse PASSED
+com.example.expirationtracker.ItemEditApiContractTest > put_item_non_existent_id_returns_404_not_found_with_ErrorResponse PASSED
+
+BUILD SUCCESSFUL in 2s
+70 unit tests executed, 70 passed, 0 failed.
+BUILD SUCCESSFUL in 2s

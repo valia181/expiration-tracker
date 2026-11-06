@@ -34,7 +34,8 @@ data class ItemListUiState(
     val selectedCategory: String? = null,
     val itemToDeleteId: String? = null,
     val isDeleteConfirmationOpen: Boolean = false,
-    val isSettingsDialogOpen: Boolean = false
+    val isSettingsDialogOpen: Boolean = false,
+    val itemToEdit: Item? = null
 )
 
 /**
@@ -128,11 +129,20 @@ class ItemListViewModel(
     }
 
     fun openAddDialog() {
-        _uiState.value = _uiState.value.copy(isAddDialogOpen = true, addDialogError = null)
+        _uiState.value = _uiState.value.copy(isAddDialogOpen = true, itemToEdit = null, addDialogError = null)
     }
 
     fun closeAddDialog() {
-        _uiState.value = _uiState.value.copy(isAddDialogOpen = false, addDialogError = null)
+        _uiState.value = _uiState.value.copy(isAddDialogOpen = false, itemToEdit = null, addDialogError = null)
+    }
+
+    fun openEditDialog(item: Item) {
+        SystemLogger.info(TAG, "Opening edit dialog for item ID: ${item.id}")
+        _uiState.value = _uiState.value.copy(
+            itemToEdit = item,
+            isAddDialogOpen = true,
+            addDialogError = null
+        )
     }
 
     fun openSettingsDialog() {
@@ -183,16 +193,22 @@ class ItemListViewModel(
                 storageLocation = storageLocation
             )
 
-            SystemLogger.info(TAG, "Calling createItem API for title='$title'")
-            val response: ApiResponse<Item> = apiController.createItem(input)
+            val editItem = _uiState.value.itemToEdit
+            val response = if (editItem != null) {
+                SystemLogger.info(TAG, "Calling updateItem API for ID='${editItem.id}', title='$title'")
+                apiController.updateItem(editItem.id, input)
+            } else {
+                SystemLogger.info(TAG, "Calling createItem API for title='$title'")
+                apiController.createItem(input)
+            }
 
             if (response.isSuccessful) {
-                SystemLogger.info(TAG, "Item created successfully via API: ${response.data?.id}")
-                _uiState.value = _uiState.value.copy(isAddDialogOpen = false, addDialogError = null)
+                SystemLogger.info(TAG, "Item successfully saved via API: ${response.data?.id}")
+                _uiState.value = _uiState.value.copy(isAddDialogOpen = false, itemToEdit = null, addDialogError = null)
                 loadItems()
             } else {
-                val errorMsg = response.error?.message ?: "Failed to create item."
-                SystemLogger.warn(TAG, "Item creation failed: $errorMsg")
+                val errorMsg = response.error?.message ?: "Failed to save item."
+                SystemLogger.warn(TAG, "Item save failed: $errorMsg")
                 _uiState.value = _uiState.value.copy(addDialogError = errorMsg)
             }
         }

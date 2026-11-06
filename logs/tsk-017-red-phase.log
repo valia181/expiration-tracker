@@ -1,0 +1,25 @@
+Executing tasks: [:app:testDebugUnitTest, --tests, com.example.expirationtracker.ItemEditApiContractTest] in project C:\Users\HelpDesk/Desktop\expiration-tracker\expiration-tracker
+
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest --tests com.example.expirationtracker.ItemEditApiContractTest
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:compressDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:compileDebugUnitTestKotlin FAILED
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemEditApiContractTest.kt:53:57 Unresolved reference 'updateItem'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/ItemEditApiContractTest.kt:50:57 Unresolved reference 'updateItem'.
+
+BUILD FAILED in `app/src/test/java/com/example/expirationtracker/ItemEditApiContractTest.kt`.
+
+BUILD FAILED in 2s

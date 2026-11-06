@@ -4,6 +4,7 @@ import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.data.local.dao.ItemDao
 import com.example.expirationtracker.data.local.dao.SettingsDao
 import com.example.expirationtracker.data.mapper.ItemMapper
+import com.example.expirationtracker.domain.calculator.StatusColorCalculator
 import com.example.expirationtracker.domain.model.BackupData
 import com.example.expirationtracker.domain.model.Item
 import com.example.expirationtracker.domain.model.ItemInput
@@ -14,13 +15,15 @@ import com.example.expirationtracker.domain.validation.ValidationResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 /**
  * Repository interface defining item, settings, and backup data access operations.
- * Traceability: REQ-NF-007 (Architecture separation), REQ-F-008, REQ-F-009, REQ-F-010, REQ-NF-003.
+ * Traceability: REQ-NF-007 (Architecture separation), REQ-F-008, REQ-F-009, REQ-F-010, REQ-F-012, REQ-NF-003.
  */
 interface ItemRepository {
     suspend fun createItem(input: ItemInput): Result<Item>
+    suspend fun updateItem(id: String, input: ItemInput): Result<Item>
     suspend fun getAllItems(search: String? = null, category: String? = null): List<Item>
     suspend fun deleteItem(id: String): Boolean
     suspend fun getLeadTime(): Int
@@ -69,6 +72,55 @@ class ItemRepositoryImpl(
             Result.success(domainItem)
         } catch (e: Exception) {
             SystemLogger.error(TAG, "Failed to store item in database", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateItem(id: String, input: ItemInput): Result<Item> = withContext(ioDispatcher) {
+        SystemLogger.info(TAG, "Attempting to update item ID: $id with title: '${input.title}'")
+
+        val validationResult: ValidationResult = validator.validate(input)
+        if (!validationResult.isValid) {
+            val errorMsg = validationResult.errors.joinToString("; ")
+            SystemLogger.warn(TAG, "Item update aborted: $errorMsg")
+            return@withContext Result.failure(IllegalArgumentException(errorMsg))
+        }
+
+        val leadTimeDays = settingsDao.getLeadTime()
+        val today = LocalDate.now()
+        val parsedDate = try {
+            LocalDate.parse(input.expirationDate.trim())
+        } catch (_: Exception) {
+            today
+        }
+        val statusColor = StatusColorCalculator().calculateStatus(
+            expirationDate = parsedDate,
+            currentDate = today,
+            leadTimeDays = leadTimeDays
+        )
+
+        val domainItem = Item(
+            id = id,
+            title = input.title.trim(),
+            expirationDate = input.expirationDate.trim(),
+            category = input.category,
+            storageLocation = input.storageLocation?.trim()?.ifBlank { null },
+            statusColor = statusColor
+        )
+
+        val entity = ItemMapper.toEntity(domainItem)
+
+        try {
+            val affectedRows = itemDao.update(entity)
+            if (affectedRows > 0) {
+                SystemLogger.info(TAG, "Item successfully updated with ID: $id")
+                Result.success(domainItem)
+            } else {
+                SystemLogger.warn(TAG, "Item with ID $id not found in database for update.")
+                Result.failure(NoSuchElementException("Item with ID '$id' was not found."))
+            }
+        } catch (e: Exception) {
+            SystemLogger.error(TAG, "Failed to update item in database", e)
             Result.failure(e)
         }
     }

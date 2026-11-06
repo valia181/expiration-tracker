@@ -114,6 +114,96 @@ class ItemApiController(
     }
 
     /**
+     * PUT /api/v1/items/{id}: Update an existing item.
+     * Consumes id path parameter and ItemInput body.
+     * Returns ApiResponse(200, Item), ApiResponse(400, ErrorResponse), or ApiResponse(404, ErrorResponse).
+     */
+    suspend fun updateItem(id: String, input: ItemInput): ApiResponse<Item> {
+        val method = "PUT"
+        val path = "$PATH_ITEMS/$id"
+        SystemLogger.info(TAG, "Incoming API request: $method $path, body=$input")
+
+        // 1. Validation (delegated to ItemValidator)
+        val validationResult = validator.validate(input)
+        if (!validationResult.isValid) {
+            val errorResponse = validator.toErrorResponse(validationResult, path)
+            SystemLogger.warn(
+                TAG,
+                "Outgoing API response: $method $path -> HTTP ${errorResponse.status} ${HttpStatus.REASON_BAD_REQUEST}: ${errorResponse.message}"
+            )
+            return ApiResponse(status = HttpStatus.BAD_REQUEST, error = errorResponse)
+        }
+
+        // 2. Dynamic status color calculation
+        val leadTime = if (repository != null) repository.getLeadTime() else inMemoryLeadTime
+        val today = LocalDate.now()
+        val parsedDate = try {
+            LocalDate.parse(input.expirationDate.trim())
+        } catch (_: Exception) {
+            today
+        }
+        val statusColor = statusColorCalculator.calculateStatus(
+            expirationDate = parsedDate,
+            currentDate = today,
+            leadTimeDays = leadTime
+        )
+
+        val domainItem = Item(
+            id = id,
+            title = input.title.trim(),
+            expirationDate = input.expirationDate.trim(),
+            category = input.category,
+            storageLocation = input.storageLocation?.trim()?.ifBlank { null },
+            statusColor = statusColor
+        )
+
+        // 3. Persistence (delegated exclusively to ItemRepository)
+        return if (repository != null) {
+            val result = repository.updateItem(id, input)
+            if (result.isFailure) {
+                val ex = result.exceptionOrNull()
+                val isNotFound = ex is NoSuchElementException || (ex?.message?.contains("not found", ignoreCase = true) == true)
+                val status = if (isNotFound) HttpStatus.NOT_FOUND else HttpStatus.BAD_REQUEST
+                val errorReason = if (isNotFound) HttpStatus.REASON_NOT_FOUND else HttpStatus.REASON_BAD_REQUEST
+                val errorMessage = ex?.message ?: if (isNotFound) "Item with ID '$id' was not found." else "Item update failed"
+
+                val errorResponse = ErrorResponse(
+                    timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                    status = status,
+                    error = errorReason,
+                    message = errorMessage,
+                    path = path
+                )
+                SystemLogger.warn(TAG, "Outgoing API response: $method $path -> HTTP $status $errorReason: $errorMessage")
+                ApiResponse(status = status, error = errorResponse)
+            } else {
+                val stored = result.getOrNull() ?: domainItem
+                val responseItem = stored.copy(statusColor = statusColor)
+                SystemLogger.info(TAG, "Outgoing API response: $method $path -> HTTP ${HttpStatus.OK} ${HttpStatus.REASON_OK} (ID=${responseItem.id})")
+                ApiResponse(status = HttpStatus.OK, data = responseItem)
+            }
+        } else {
+            val index = inMemoryItems.indexOfFirst { it.id == id }
+            if (index >= 0) {
+                inMemoryItems[index] = domainItem
+                SystemLogger.info(TAG, "Outgoing API response: $method $path -> HTTP ${HttpStatus.OK} ${HttpStatus.REASON_OK} (ID=${domainItem.id})")
+                ApiResponse(status = HttpStatus.OK, data = domainItem)
+            } else {
+                val errorMessage = "Item with ID '$id' was not found."
+                val errorResponse = ErrorResponse(
+                    timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                    status = HttpStatus.NOT_FOUND,
+                    error = HttpStatus.REASON_NOT_FOUND,
+                    message = errorMessage,
+                    path = path
+                )
+                SystemLogger.warn(TAG, "Outgoing API response: $method $path -> HTTP ${HttpStatus.NOT_FOUND} ${HttpStatus.REASON_NOT_FOUND}: $errorMessage")
+                ApiResponse(status = HttpStatus.NOT_FOUND, error = errorResponse)
+            }
+        }
+    }
+
+    /**
      * GET /api/v1/items: Retrieve all items sorted chronologically by expiration date.
      * Consumes optional search and category query parameters.
      * Returns ApiResponse(200, List<Item>) or ApiResponse(400, ErrorResponse).

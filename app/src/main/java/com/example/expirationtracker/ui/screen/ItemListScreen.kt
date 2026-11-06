@@ -244,6 +244,7 @@ fun ItemListScreen(
                             ) { item ->
                                 ItemCard(
                                     item = item,
+                                    onEditClick = { edItem -> viewModel.openEditDialog(edItem) },
                                     onDeleteClick = { id -> viewModel.requestDelete(id) }
                                 )
                             }
@@ -253,9 +254,10 @@ fun ItemListScreen(
             }
         }
 
-        // Add Item Dialog
+        // Add / Edit Item Dialog
         if (uiState.isAddDialogOpen) {
             AddItemDialog(
+                itemToEdit = uiState.itemToEdit,
                 errorMessage = uiState.addDialogError,
                 onDismiss = { viewModel.closeAddDialog() },
                 onSave = { title, expirationDate, category, storageLocation ->

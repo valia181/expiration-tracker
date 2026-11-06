@@ -21,6 +21,7 @@ class ItemSearchAndFilterUnitTest {
     fun viewModel_onSearchQueryChanged_updates_search_state_and_filters_list() {
         val fakeRepo = object : ItemRepository {
             override suspend fun createItem(input: com.example.expirationtracker.domain.model.ItemInput) = Result.failure<com.example.expirationtracker.domain.model.Item>(NotImplementedError())
+            override suspend fun updateItem(id: String, input: com.example.expirationtracker.domain.model.ItemInput) = Result.success(com.example.expirationtracker.domain.model.Item(id = id, title = input.title, expirationDate = input.expirationDate, category = input.category, storageLocation = input.storageLocation, statusColor = com.example.expirationtracker.domain.model.StatusColor.GREEN))
             override suspend fun getAllItems(search: String?, category: String?) = emptyList<com.example.expirationtracker.domain.model.Item>()
             override suspend fun deleteItem(id: String) = false
             override suspend fun getLeadTime() = 7
@@ -42,6 +43,7 @@ class ItemSearchAndFilterUnitTest {
     fun viewModel_onCategorySelected_updates_category_filter_state() {
         val fakeRepo = object : ItemRepository {
             override suspend fun createItem(input: com.example.expirationtracker.domain.model.ItemInput) = Result.failure<com.example.expirationtracker.domain.model.Item>(NotImplementedError())
+            override suspend fun updateItem(id: String, input: com.example.expirationtracker.domain.model.ItemInput) = Result.success(com.example.expirationtracker.domain.model.Item(id = id, title = input.title, expirationDate = input.expirationDate, category = input.category, storageLocation = input.storageLocation, statusColor = com.example.expirationtracker.domain.model.StatusColor.GREEN))
             override suspend fun getAllItems(search: String?, category: String?) = emptyList<com.example.expirationtracker.domain.model.Item>()
             override suspend fun deleteItem(id: String) = false
             override suspend fun getLeadTime() = 7

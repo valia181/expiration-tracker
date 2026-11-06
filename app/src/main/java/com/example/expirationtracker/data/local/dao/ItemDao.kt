@@ -157,6 +157,28 @@ open class ItemDao(val dbHelper: ExpirationTrackerDbHelper? = null) {
         return deletedRows
     }
 
+    open fun update(item: ItemEntity): Int {
+        val db = dbHelper?.writableDatabase ?: return 0
+        var updatedRows = 0
+        db.transaction {
+            val values = ContentValues(5).apply {
+                put(ExpirationTrackerDbHelper.COLUMN_TITLE, item.title)
+                put(ExpirationTrackerDbHelper.COLUMN_EXPIRATION_DATE, item.expirationDate)
+                put(ExpirationTrackerDbHelper.COLUMN_CATEGORY, item.category)
+                put(ExpirationTrackerDbHelper.COLUMN_STORAGE_LOCATION, item.storageLocation)
+                put(ExpirationTrackerDbHelper.COLUMN_STATUS_COLOR, item.statusColor)
+            }
+            updatedRows = update(
+                ExpirationTrackerDbHelper.TABLE_ITEMS,
+                values,
+                "${ExpirationTrackerDbHelper.COLUMN_ID} = ?",
+                arrayOf(item.id)
+            )
+        }
+        SystemLogger.info(TAG, "Updated item id: ${item.id}, affected rows: $updatedRows")
+        return updatedRows
+    }
+
     open fun deleteAll(): Int {
         val db = dbHelper?.writableDatabase ?: return 0
         var deletedRows = 0

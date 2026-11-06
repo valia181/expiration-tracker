@@ -29,30 +29,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.expirationtracker.domain.model.Category
+import com.example.expirationtracker.domain.model.Item
 
 /**
- * Add Item Dialog Composable.
- * Traceability: REQ-F-001, REQ-F-002, REQ-F-003, AC-F-001, AC-F-002, AC-F-003.
+ * Add / Edit Item Dialog Composable.
+ * Traceability: REQ-F-001, REQ-F-002, REQ-F-003, REQ-F-012, AC-F-001, AC-F-002, AC-F-003, AC-F-012.
  * Adheres to Material Design 3 and WCAG 2.1 AA accessibility guidelines.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemDialog(
+    itemToEdit: Item? = null,
     errorMessage: String?,
     onDismiss: () -> Unit,
     onSave: (title: String, expirationDate: String, category: Category, storageLocation: String?) -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var expirationDate by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(Category.FOOD) }
-    var storageLocation by remember { mutableStateOf("") }
+    var title by remember(itemToEdit) { mutableStateOf(itemToEdit?.title ?: "") }
+    var expirationDate by remember(itemToEdit) { mutableStateOf(itemToEdit?.expirationDate ?: "") }
+    var selectedCategory by remember(itemToEdit) { mutableStateOf(itemToEdit?.category ?: Category.FOOD) }
+    var storageLocation by remember(itemToEdit) { mutableStateOf(itemToEdit?.storageLocation ?: "") }
     var isCategoryDropdownExpanded by remember { mutableStateOf(false) }
+
+    val isEditing = itemToEdit != null
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Add Tracked Item",
+                text = if (isEditing) "Edit Tracked Item" else "Add Tracked Item",
                 style = MaterialTheme.typography.titleLarge
             )
         },

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -44,6 +45,7 @@ import com.example.expirationtracker.ui.theme.StatusRedText
 @Composable
 fun ItemCard(
     item: Item,
+    onEditClick: (Item) -> Unit,
     onDeleteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -100,16 +102,33 @@ fun ItemCard(
                 }
             }
 
-            // Interactive element with minimum 48x48 dp touch target (REQ-NF-006)
-            IconButton(
-                onClick = { onDeleteClick(item.id) },
-                modifier = Modifier.size(48.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete ${item.title}",
-                    tint = MaterialTheme.colorScheme.error
-                )
+                // Edit action button (REQ-F-012, AC-F-012)
+                IconButton(
+                    onClick = { onEditClick(item) },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit ${item.title}",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // Interactive element with minimum 48x48 dp touch target (REQ-NF-006)
+                IconButton(
+                    onClick = { onDeleteClick(item.id) },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete ${item.title}",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
