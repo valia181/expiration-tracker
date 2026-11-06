@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.expirationtracker.data.local.dao.ItemDao
 import com.example.expirationtracker.data.local.entity.ItemEntity
+import com.example.expirationtracker.ui.theme.OnPinkSurface
+import com.example.expirationtracker.ui.theme.PinkBackground
 import com.example.expirationtracker.ui.theme.StatusGreenContainer
 import com.example.expirationtracker.ui.theme.StatusGreenText
 import com.example.expirationtracker.ui.theme.StatusOrangeContainer
@@ -93,6 +95,15 @@ class AccessibilityAndPerformanceTest {
     // ==========================================
     // 2. Accessibility: WCAG 2.1 Level AA Color Contrast (REQ-NF-005)
     // ==========================================
+
+    @Test
+    fun verify_theme_on_pink_surface_meets_wcag_2_1_aa_contrast_ratio_4_5_to_1() {
+        val contrastRatio = calculateContrastRatio(OnPinkSurface, PinkBackground)
+        assertTrue(
+            "Theme OnPinkSurface/PinkBackground contrast ratio $contrastRatio must be >= 4.5:1 (WCAG 2.1 AA)",
+            contrastRatio >= 4.5
+        )
+    }
 
     @Test
     fun verify_status_red_colors_meet_wcag_2_1_aa_contrast_ratio_4_5_to_1() {

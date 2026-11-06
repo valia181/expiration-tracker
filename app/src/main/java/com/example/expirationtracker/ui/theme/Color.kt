@@ -2,22 +2,26 @@ package com.example.expirationtracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val PinkPrimary = Color(0xFFC8526B)
+val PinkSecondary = Color(0xFFE0768F)
+val PinkTertiary = Color(0xFFF7C3CF)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val PinkBackground = Color(0xFFFFF0F4)
+val PinkSurface = Color(0xFFFFF0F4)
+val OnPinkPrimary = Color(0xFFFFFFFF)
+val OnPinkSurface = Color(0xFF3B0D16)
+
+val PinkPrimaryDark = Color(0xFFE0768F)
+val PinkSecondaryDark = Color(0xFFC8526B)
+val PinkTertiaryDark = Color(0xFFF7C3CF)
+val PinkBackgroundDark = Color(0xFF2A151A)
+val PinkSurfaceDark = Color(0xFF2A151A)
+val OnPinkPrimaryDark = Color(0xFF3B0D16)
+val OnPinkSurfaceDark = Color(0xFFFFF0F4)
 
 /**
  * Accessible Status Colors adhering to WCAG 2.1 Level AA (REQ-NF-005):
- * Minimum contrast ratio 4.5:1 against light/dark backgrounds.
- *
- * Light theme container + text pairs:
- * - Red (Expired): Dark crimson text #B3261E on soft container #F9DEDC (Contrast > 7:1)
- * - Orange (Warning): Deep amber-brown text #7A4100 on warm container #FFE0B2 (Contrast > 7:1)
- * - Green (Safe): Deep forest green text #146C2E on pale green container #C4EED0 (Contrast > 7:1)
+ * Minimum contrast ratio 4.5:1 against backgrounds.
  */
 val StatusRedText = Color(0xFFB3261E)
 val StatusRedContainer = Color(0xFFF9DEDC)
