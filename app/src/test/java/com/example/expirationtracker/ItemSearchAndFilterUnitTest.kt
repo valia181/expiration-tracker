@@ -1,6 +1,8 @@
 package com.example.expirationtracker
 
 import com.example.expirationtracker.data.repository.ItemRepository
+import com.example.expirationtracker.domain.model.BackupData
+import com.example.expirationtracker.domain.model.Settings
 import com.example.expirationtracker.ui.viewmodel.ItemListViewModel
 import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.assertEquals
@@ -23,6 +25,8 @@ class ItemSearchAndFilterUnitTest {
             override suspend fun deleteItem(id: String) = false
             override suspend fun getLeadTime() = 7
             override suspend fun saveLeadTime(leadTime: Int) = Result.success(Unit)
+            override suspend fun exportBackupData() = BackupData(settings = Settings(), items = emptyList())
+            override suspend fun importBackupData(backupData: BackupData) = true
         }
         val viewModel = ItemListViewModel(
             repository = fakeRepo,
@@ -42,6 +46,8 @@ class ItemSearchAndFilterUnitTest {
             override suspend fun deleteItem(id: String) = false
             override suspend fun getLeadTime() = 7
             override suspend fun saveLeadTime(leadTime: Int) = Result.success(Unit)
+            override suspend fun exportBackupData() = BackupData(settings = Settings(), items = emptyList())
+            override suspend fun importBackupData(backupData: BackupData) = true
         }
         val viewModel = ItemListViewModel(
             repository = fakeRepo,

@@ -166,4 +166,37 @@ open class ItemDao(val dbHelper: ExpirationTrackerDbHelper? = null) {
         SystemLogger.info(TAG, "Cleared all items from database. Affected rows: $deletedRows")
         return deletedRows
     }
+
+    open fun restoreFromBackup(backupEntities: List<ItemEntity>): Boolean {
+        val db = dbHelper?.writableDatabase ?: return false
+        var success = false
+        try {
+            db.transaction {
+                // 1. Delete all existing items
+                delete(ExpirationTrackerDbHelper.TABLE_ITEMS, null, null)
+
+                // 2. Insert all backup entities transactionally
+                for (item in backupEntities) {
+                    val values = ContentValues(6).apply {
+                        put(ExpirationTrackerDbHelper.COLUMN_ID, item.id)
+                        put(ExpirationTrackerDbHelper.COLUMN_TITLE, item.title)
+                        put(ExpirationTrackerDbHelper.COLUMN_EXPIRATION_DATE, item.expirationDate)
+                        put(ExpirationTrackerDbHelper.COLUMN_CATEGORY, item.category)
+                        put(ExpirationTrackerDbHelper.COLUMN_STORAGE_LOCATION, item.storageLocation)
+                        put(ExpirationTrackerDbHelper.COLUMN_STATUS_COLOR, item.statusColor)
+                    }
+                    val rowId = insert(ExpirationTrackerDbHelper.TABLE_ITEMS, null, values)
+                    if (rowId == -1L) {
+                        throw IllegalStateException("Failed to insert item ${item.id} during backup restore.")
+                    }
+                }
+            }
+            success = true
+            SystemLogger.info(TAG, "Database transactionally restored with ${backupEntities.size} items.")
+        } catch (e: Exception) {
+            SystemLogger.error(TAG, "Database restore transaction failed and rolled back.", e)
+            success = false
+        }
+        return success
+    }
 }

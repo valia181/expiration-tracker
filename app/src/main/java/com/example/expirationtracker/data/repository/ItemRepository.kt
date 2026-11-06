@@ -4,6 +4,7 @@ import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.data.local.dao.ItemDao
 import com.example.expirationtracker.data.local.dao.SettingsDao
 import com.example.expirationtracker.data.mapper.ItemMapper
+import com.example.expirationtracker.domain.model.BackupData
 import com.example.expirationtracker.domain.model.Item
 import com.example.expirationtracker.domain.model.ItemInput
 import com.example.expirationtracker.domain.model.Settings
@@ -15,8 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * Repository interface defining item and settings data access operations.
- * Traceability: REQ-NF-007 (Architecture separation), REQ-F-008.
+ * Repository interface defining item, settings, and backup data access operations.
+ * Traceability: REQ-NF-007 (Architecture separation), REQ-F-008, REQ-F-009, REQ-F-010, REQ-NF-003.
  */
 interface ItemRepository {
     suspend fun createItem(input: ItemInput): Result<Item>
@@ -24,6 +25,8 @@ interface ItemRepository {
     suspend fun deleteItem(id: String): Boolean
     suspend fun getLeadTime(): Int
     suspend fun saveLeadTime(leadTime: Int): Result<Unit>
+    suspend fun exportBackupData(): BackupData
+    suspend fun importBackupData(backupData: BackupData): Boolean
 }
 
 /**
@@ -99,6 +102,41 @@ class ItemRepositoryImpl(
         } catch (e: Exception) {
             SystemLogger.error(TAG, "Failed to save lead time", e)
             Result.failure(e)
+        }
+    }
+
+    override suspend fun exportBackupData(): BackupData = withContext(ioDispatcher) {
+        val leadTime = settingsDao.getLeadTime()
+        val items = itemDao.getAllSortedByExpirationDate().map(ItemMapper::toDomain)
+        SystemLogger.info(TAG, "Exported backup data: leadTime=$leadTime, itemsCount=${items.size}")
+        BackupData(
+            settings = Settings(notificationLeadTime = leadTime),
+            items = items
+        )
+    }
+
+    override suspend fun importBackupData(backupData: BackupData): Boolean = withContext(ioDispatcher) {
+        if (!Settings.isValidLeadTime(backupData.settings.notificationLeadTime)) {
+            SystemLogger.warn(TAG, "Import backup aborted: invalid notificationLeadTime '${backupData.settings.notificationLeadTime}'")
+            return@withContext false
+        }
+
+        try {
+            // Save settings
+            settingsDao.saveLeadTime(backupData.settings.notificationLeadTime)
+
+            // Save items in transactional block via DAO (REQ-NF-003)
+            val entities = backupData.items.map(ItemMapper::toEntity)
+            val restored = itemDao.restoreFromBackup(entities)
+            if (restored) {
+                SystemLogger.info(TAG, "Backup import transaction completed successfully for ${entities.size} items.")
+            } else {
+                SystemLogger.warn(TAG, "Backup import transaction failed.")
+            }
+            restored
+        } catch (e: Exception) {
+            SystemLogger.error(TAG, "Exception during backup import, transaction rolled back.", e)
+            false
         }
     }
 }

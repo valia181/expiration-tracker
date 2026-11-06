@@ -3,6 +3,7 @@ package com.example.expirationtracker.data.api
 import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.data.repository.ItemRepository
 import com.example.expirationtracker.domain.calculator.StatusColorCalculator
+import com.example.expirationtracker.domain.model.BackupData
 import com.example.expirationtracker.domain.model.Category
 import com.example.expirationtracker.domain.model.ErrorResponse
 import com.example.expirationtracker.domain.model.Item
@@ -42,6 +43,7 @@ class ItemApiController(
 
     // In-memory backing store for testing / standalone usage if repository is not injected
     private val inMemoryItems = mutableListOf<Item>()
+    private var inMemoryLeadTime = DEFAULT_NOTIFICATION_LEAD_TIME_DAYS
 
     /**
      * POST /api/v1/items: Create a new item.
@@ -238,7 +240,7 @@ class ItemApiController(
         val leadTime = if (repository != null) {
             repository.getLeadTime()
         } else {
-            DEFAULT_NOTIFICATION_LEAD_TIME_DAYS
+            inMemoryLeadTime
         }
 
         val settings = Settings(notificationLeadTime = leadTime)
@@ -276,6 +278,7 @@ class ItemApiController(
         val success = if (repository != null) {
             repository.saveLeadTime(settings.notificationLeadTime).isSuccess
         } else {
+            inMemoryLeadTime = settings.notificationLeadTime
             true
         }
 
@@ -294,6 +297,104 @@ class ItemApiController(
                 path = path
             )
             SystemLogger.error(TAG, "Outgoing API response: $method $path -> HTTP ${HttpStatus.BAD_REQUEST} error")
+            ApiResponse(status = HttpStatus.BAD_REQUEST, error = errorResponse)
+        }
+    }
+
+    /**
+     * POST /api/v1/backups/export: Export database into BackupData payload.
+     */
+    suspend fun exportBackup(): ApiResponse<BackupData> {
+        val method = "POST"
+        val path = "/api/v1/backups/export"
+        SystemLogger.info(TAG, "Incoming API request: $method $path")
+
+        return try {
+            val backupData = if (repository != null) {
+                repository.exportBackupData()
+            } else {
+                BackupData(
+                    settings = Settings(notificationLeadTime = inMemoryLeadTime),
+                    items = inMemoryItems.toList()
+                )
+            }
+            SystemLogger.info(
+                TAG,
+                "Outgoing API response: $method $path -> HTTP ${HttpStatus.OK} ${HttpStatus.REASON_OK} (${backupData.items.size} items exported)"
+            )
+            ApiResponse(status = HttpStatus.OK, data = backupData)
+        } catch (e: Exception) {
+            val errorResponse = ErrorResponse(
+                timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                status = HttpStatus.INTERNAL_SERVER_ERROR,
+                error = "Internal Server Error",
+                message = "Failed to generate database backup due to a file system error.",
+                path = path
+            )
+            SystemLogger.error(TAG, "Outgoing API response: $method $path -> HTTP 500 Internal Server Error", e)
+            ApiResponse(status = HttpStatus.INTERNAL_SERVER_ERROR, error = errorResponse)
+        }
+    }
+
+    /**
+     * POST /api/v1/backups/import: Import database from BackupData payload.
+     */
+    suspend fun importBackup(backupData: BackupData?): ApiResponse<String> {
+        val method = "POST"
+        val path = "/api/v1/backups/import"
+        SystemLogger.info(TAG, "Incoming API request: $method $path")
+
+        // 1. Validate required backup schema fields
+        if (backupData == null || backupData.settings == null || backupData.items == null) {
+            val errorMessage = "Invalid backup file: missing required 'settings' or 'items' object."
+            val errorResponse = ErrorResponse(
+                timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                status = HttpStatus.BAD_REQUEST,
+                error = HttpStatus.REASON_BAD_REQUEST,
+                message = errorMessage,
+                path = path
+            )
+            SystemLogger.warn(TAG, "Outgoing API response: $method $path -> HTTP 400 Bad Request: $errorMessage")
+            return ApiResponse(status = HttpStatus.BAD_REQUEST, error = errorResponse)
+        }
+
+        if (!Settings.isValidLeadTime(backupData.settings.notificationLeadTime)) {
+            val errorMessage = "Invalid backup file: notificationLeadTime '${backupData.settings.notificationLeadTime}' must be one of [1, 3, 7, 14]."
+            val errorResponse = ErrorResponse(
+                timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                status = HttpStatus.BAD_REQUEST,
+                error = HttpStatus.REASON_BAD_REQUEST,
+                message = errorMessage,
+                path = path
+            )
+            SystemLogger.warn(TAG, "Outgoing API response: $method $path -> HTTP 400 Bad Request: $errorMessage")
+            return ApiResponse(status = HttpStatus.BAD_REQUEST, error = errorResponse)
+        }
+
+        // 2. Perform Import via Repository
+        val success = if (repository != null) {
+            repository.importBackupData(backupData)
+        } else {
+            inMemoryLeadTime = backupData.settings.notificationLeadTime
+            inMemoryItems.clear()
+            inMemoryItems.addAll(backupData.items)
+            true
+        }
+
+        return if (success) {
+            val successMessage = "Database successfully restored."
+            SystemLogger.info(TAG, "Outgoing API response: $method $path -> HTTP 200 OK: $successMessage")
+            ApiResponse(status = HttpStatus.OK, data = successMessage)
+        } else {
+            val errorMessage = "Invalid backup file: failed to restore database transactionally."
+            val errorResponse = ErrorResponse(
+                timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+                status = HttpStatus.BAD_REQUEST,
+                error = HttpStatus.REASON_BAD_REQUEST,
+                message = errorMessage,
+                path = path
+            )
+            SystemLogger.warn(TAG, "Outgoing API response: $method $path -> HTTP 400 Bad Request: $errorMessage")
             ApiResponse(status = HttpStatus.BAD_REQUEST, error = errorResponse)
         }
     }

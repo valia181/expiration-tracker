@@ -1,0 +1,34 @@
+Executing tasks: [:app:testDebugUnitTest, --tests, com.example.expirationtracker.BackupApiContractTest] in project C:\Users\HelpDesk/Desktop\expiration-tracker\expiration-tracker
+
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest --tests com.example.expirationtracker.BackupApiContractTest
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:compressDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:compileDebugUnitTestKotlin FAILED
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/BackupApiContractTest.kt:5:51 Unresolved reference 'BackupData'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/BackupApiContractTest.kt:43:63 Unresolved reference 'exportBackup'.
+e: file:///C:/Users/HelpDesk/Desktop/expiration-tracker/expiration-tracker/app/src/test/java/com/example/expirationtracker/BackupApiContractTest.kt:73:59 Unresolved reference 'importBackup'.
+
+BUILD FAILED in 2s

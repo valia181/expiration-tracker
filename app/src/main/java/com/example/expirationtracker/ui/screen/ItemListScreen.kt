@@ -1,5 +1,8 @@
 package com.example.expirationtracker.ui.screen
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -36,14 +41,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.ui.viewmodel.ItemListViewModel
 
 /**
- * Main Chronological Item List Screen with Search Bar, Category Filtering, Deletion Confirmation, and Settings.
- * Traceability: REQ-F-001, REQ-F-004, REQ-F-005, REQ-F-006, REQ-F-007, REQ-F-008, REQ-F-011, AC-F-008, AC-F-011, REQ-NF-001, REQ-NF-002, REQ-NF-005, REQ-NF-006.
+ * Main Chronological Item List Screen with Search Bar, Category Filtering, Deletion Confirmation, Settings, and Backup Import/Export.
+ * Traceability: REQ-F-001, REQ-F-004, REQ-F-005, REQ-F-006, REQ-F-007, REQ-F-008, REQ-F-009, REQ-F-010, REQ-F-011, AC-F-008, AC-F-009, AC-F-010, AC-F-011.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +58,7 @@ fun ItemListScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     DisposableEffect(uiState.items.size) {
         SystemLogger.info(
@@ -61,12 +68,58 @@ fun ItemListScreen(
         onDispose { }
     }
 
+    // SAF Export Launcher (ACTION_CREATE_DOCUMENT)
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.exportBackupToUri(uri, context.contentResolver)
+        } else {
+            SystemLogger.info("ItemListScreen", "SAF export cancelled by user.")
+        }
+    }
+
+    // SAF Import Launcher (ACTION_OPEN_DOCUMENT)
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.importBackupFromUri(uri, context.contentResolver)
+        } else {
+            SystemLogger.info("ItemListScreen", "SAF import cancelled by user.")
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text("Expiration Tracker") },
                 actions = {
+                    IconButton(
+                        onClick = { exportLauncher.launch("expiration_tracker_backup.json") },
+                        modifier = Modifier
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .testTag("btn_export_backup")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FileDownload,
+                            contentDescription = "Export Backup"
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { importLauncher.launch(arrayOf("application/json", "*/*")) },
+                        modifier = Modifier
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .testTag("btn_import_backup")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FileUpload,
+                            contentDescription = "Import Backup"
+                        )
+                    }
+
                     IconButton(
                         onClick = { viewModel.openSettingsDialog() },
                         modifier = Modifier

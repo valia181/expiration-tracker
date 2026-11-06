@@ -6,6 +6,7 @@ import com.example.expirationtracker.core.logging.SystemLogger
 import com.example.expirationtracker.data.api.ApiResponse
 import com.example.expirationtracker.data.api.ItemApiController
 import com.example.expirationtracker.data.repository.ItemRepository
+import com.example.expirationtracker.domain.model.BackupData
 import com.example.expirationtracker.domain.model.Category
 import com.example.expirationtracker.domain.model.Item
 import com.example.expirationtracker.domain.model.ItemInput
@@ -241,6 +242,98 @@ class ItemListViewModel(
                     SystemLogger.warn(TAG, "Failed to delete item via API: $errorMsg")
                     _uiState.value = _uiState.value.copy(errorMessage = errorMsg)
                 }
+            }
+        }
+    }
+
+    fun exportBackup(onResult: (BackupData?) -> Unit) {
+        SystemLogger.info(TAG, "Export backup requested.")
+        viewModelScope.launch(mainDispatcher) {
+            val response = apiController.exportBackup()
+            if (response.isSuccessful) {
+                SystemLogger.info(TAG, "Export backup payload generated successfully.")
+                onResult(response.data)
+            } else {
+                SystemLogger.warn(TAG, "Export backup failed: ${response.error?.message}")
+                _uiState.value = _uiState.value.copy(errorMessage = response.error?.message ?: "Export failed.")
+                onResult(null)
+            }
+        }
+    }
+
+    fun importBackup(backupData: BackupData) {
+        SystemLogger.info(TAG, "Import backup requested with ${backupData.items.size} items.")
+        viewModelScope.launch(mainDispatcher) {
+            val response = apiController.importBackup(backupData)
+            if (response.isSuccessful) {
+                SystemLogger.info(TAG, "Import backup succeeded. Refreshing items list.")
+                loadItems()
+            } else {
+                val errorMsg = response.error?.message ?: "Failed to import backup."
+                SystemLogger.warn(TAG, "Import backup failed: $errorMsg")
+                _uiState.value = _uiState.value.copy(errorMessage = errorMsg)
+            }
+        }
+    }
+
+    fun exportBackupToUri(uri: android.net.Uri, contentResolver: android.content.ContentResolver) {
+        SystemLogger.info(TAG, "Exporting backup to SAF URI: $uri")
+        viewModelScope.launch(mainDispatcher) {
+            val response = withContext(Dispatchers.IO) { apiController.exportBackup() }
+            if (response.isSuccessful && response.data != null) {
+                val success = withContext(Dispatchers.IO) {
+                    try {
+                        contentResolver.openOutputStream(uri)?.use { outputStream ->
+                            val jsonString = com.example.expirationtracker.util.JsonUtil.toJson(response.data)
+                            outputStream.write(jsonString.toByteArray())
+                        }
+                        true
+                    } catch (e: Exception) {
+                        SystemLogger.error(TAG, "Failed to write JSON backup to SAF URI", e)
+                        false
+                    }
+                }
+                if (success) {
+                    SystemLogger.info(TAG, "Successfully wrote JSON backup to SAF URI: $uri")
+                } else {
+                    _uiState.value = _uiState.value.copy(errorMessage = "Failed to write backup file.")
+                }
+            } else {
+                val errorMsg = response.error?.message ?: "Failed to export backup."
+                SystemLogger.warn(TAG, "Export backup failed: $errorMsg")
+                _uiState.value = _uiState.value.copy(errorMessage = errorMsg)
+            }
+        }
+    }
+
+    fun importBackupFromUri(uri: android.net.Uri, contentResolver: android.content.ContentResolver) {
+        SystemLogger.info(TAG, "Importing backup from SAF URI: $uri")
+        viewModelScope.launch(mainDispatcher) {
+            val backupData = withContext(Dispatchers.IO) {
+                try {
+                    contentResolver.openInputStream(uri)?.use { inputStream ->
+                        val jsonString = inputStream.bufferedReader().use { it.readText() }
+                        com.example.expirationtracker.util.JsonUtil.fromJson(jsonString)
+                    }
+                } catch (e: Exception) {
+                    SystemLogger.error(TAG, "Error reading SAF import file stream", e)
+                    null
+                }
+            }
+
+            if (backupData != null) {
+                val response = withContext(Dispatchers.IO) { apiController.importBackup(backupData) }
+                if (response.isSuccessful) {
+                    SystemLogger.info(TAG, "Import backup succeeded. Refreshing items list.")
+                    loadItems()
+                } else {
+                    val errorMsg = response.error?.message ?: "Failed to import backup."
+                    SystemLogger.warn(TAG, "Import backup failed: $errorMsg")
+                    _uiState.value = _uiState.value.copy(errorMessage = errorMsg)
+                }
+            } else {
+                SystemLogger.warn(TAG, "Invalid or corrupted backup file at URI: $uri")
+                _uiState.value = _uiState.value.copy(errorMessage = "Invalid or corrupted backup file.")
             }
         }
     }
