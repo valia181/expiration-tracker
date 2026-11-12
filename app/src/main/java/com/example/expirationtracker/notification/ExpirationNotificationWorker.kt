@@ -36,6 +36,12 @@ class ExpirationNotificationWorker(
     private val repository: ItemRepository = ItemRepositoryImpl(ItemDao(ExpirationTrackerDbHelper(appContext)))
 ) : CoroutineWorker(appContext, workerParams) {
 
+    constructor(context: Context, workerParams: WorkerParameters) : this(
+        context,
+        workerParams,
+        ItemRepositoryImpl(ItemDao(ExpirationTrackerDbHelper(context)))
+    )
+
     companion object {
         private const val TAG = "ExpirationNotificationWorker"
         const val CHANNEL_ID = "expiration_notifications"

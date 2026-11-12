@@ -1,12 +1,7 @@
 package com.example.expirationtracker.ui
 
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.expirationtracker.MainActivity
 import org.junit.Rule
@@ -44,7 +39,8 @@ class ItemEditUiTest {
         // When user clicks edit, modifies title, and saves
         composeTestRule.onNodeWithContentDescription("Edit Initial Item").performClick()
 
-        composeTestRule.onNodeWithTag("input_title").performTextInput(" Edited")
+        composeTestRule.onNodeWithTag("input_title").performTextClearance()
+        composeTestRule.onNodeWithTag("input_title").performTextInput("Initial Item Edited")
         composeTestRule.onNodeWithTag("btn_save_item").performClick()
 
         // Then list updates instantly with edited item details (AC-F-012)

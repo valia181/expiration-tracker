@@ -18,22 +18,79 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 /**
- * Repository interface defining item, settings, and backup data access operations.
- * Traceability: REQ-NF-007 (Architecture separation), REQ-F-008, REQ-F-009, REQ-F-010, REQ-F-012, REQ-NF-003.
+ * Repository boundary governing asynchronous data operations for tracked items, global notification lead time settings,
+ * and database backup/restore persistence.
+ *
+ * Enforces Clean Architecture separation (REQ-NF-007) by abstracting SQLite/DAO storage mechanics from domain and UI layers.
  */
 interface ItemRepository {
+    /**
+     * Persists a new household item after validating title and calendar date constraints.
+     *
+     * @param input The unvalidated item input data containing title, expiration date, category, and optional storage location.
+     * @return A [Result] containing the successfully persisted [Item] with initialized status color, or an [IllegalArgumentException] if validation fails.
+     */
     suspend fun createItem(input: ItemInput): Result<Item>
+
+    /**
+     * Updates an existing item record identified by its unique ID.
+     *
+     * @param id The unique string identifier of the item to update. Must correspond to an existing record.
+     * @param input The updated item input data.
+     * @return A [Result] containing the updated [Item], or a [NoSuchElementException] if the record is missing.
+     */
     suspend fun updateItem(id: String, input: ItemInput): Result<Item>
+
+    /**
+     * Retrieves all items from storage, optionally filtered by search query and category.
+     *
+     * @param search Optional case-insensitive keyword to filter items by title matching.
+     * @param category Optional category name filter ("Food", "Medicine", "Cosmetics", "Chemicals", or null/All).
+     * @return A list of [Item] instances matching the filters.
+     */
     suspend fun getAllItems(search: String? = null, category: String? = null): List<Item>
+
+    /**
+     * Permanently removes an item record from storage by its unique ID.
+     *
+     * @param id The unique string identifier of the item to delete.
+     * @return `true` if one or more rows were successfully deleted, `false` otherwise.
+     */
     suspend fun deleteItem(id: String): Boolean
+
+    /**
+     * Retrieves the current global notification lead time setting in days.
+     *
+     * @return The configured lead time integer (guaranteed to be one of the allowed values: 1, 3, 7, or 14).
+     */
     suspend fun getLeadTime(): Int
+
+    /**
+     * Persists a new global notification lead time setting.
+     *
+     * @param leadTime The lead time in days. Must be strictly one of the allowed values [1, 3, 7, 14].
+     * @return A [Result] indicating success ([Unit]) or failure with [IllegalArgumentException] if the lead time is unsupported.
+     */
     suspend fun saveLeadTime(leadTime: Int): Result<Unit>
+
+    /**
+     * Serializes all current database state (global settings and item records) into a backup structure.
+     *
+     * @return A [BackupData] container holding current settings and sorted item lists.
+     */
     suspend fun exportBackupData(): BackupData
+
+    /**
+     * Replaces the local database state with the provided backup data within a transactional block.
+     *
+     * @param backupData The backup payload containing settings and item records to restore.
+     * @return `true` if the import transaction completed successfully, `false` if validation failed or an exception occurred.
+     */
     suspend fun importBackupData(backupData: BackupData): Boolean
 }
 
 /**
- * Concrete ItemRepository implementation delegating to SQLite DAO with IO dispatcher execution.
+ * Concrete implementation of [ItemRepository] delegating to SQLite DAO with IO dispatcher execution.
  */
 class ItemRepositoryImpl(
     private val itemDao: ItemDao,

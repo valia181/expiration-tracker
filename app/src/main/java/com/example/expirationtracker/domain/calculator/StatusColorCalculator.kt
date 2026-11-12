@@ -5,10 +5,10 @@ import com.example.expirationtracker.domain.model.StatusColor
 import java.time.LocalDate
 
 /**
- * Calculates dynamic status color per REQ-F-005 and AC-F-005:
- * - Red (Expired): Date < Today
- * - Orange (Warning): Today <= Date <= Today + LeadTime
- * - Green (Safe): Date > Today + LeadTime
+ * Encapsulates the core 3-level dynamic color status calculation algorithm per REQ-F-005 and AC-F-005:
+ * - **Red (Expired):** The expiration date is strictly before the current date (`Date < Today`).
+ * - **Orange (Warning):** The expiration date falls within the global notification lead time window (`Today <= Date <= Today + LeadTime`).
+ * - **Green (Safe):** The expiration date is strictly beyond the global notification lead time window (`Date > Today + LeadTime`).
  */
 class StatusColorCalculator {
 
@@ -16,6 +16,14 @@ class StatusColorCalculator {
         private const val TAG = "StatusColorCalculator"
     }
 
+    /**
+     * Computes the [StatusColor] for an item based on its expiration date, baseline date, and configured lead time window.
+     *
+     * @param expirationDate The calendar expiration date of the item.
+     * @param currentDate The baseline date representing "today" (supports testing with arbitrary dates).
+     * @param leadTimeDays The global notification lead time in days (must be 1, 3, 7, or 14).
+     * @return The computed [StatusColor] ([StatusColor.RED], [StatusColor.ORANGE], or [StatusColor.GREEN]).
+     */
     fun calculateStatus(
         expirationDate: LocalDate,
         currentDate: LocalDate,

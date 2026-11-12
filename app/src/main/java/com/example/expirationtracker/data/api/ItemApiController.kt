@@ -17,14 +17,19 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 /**
- * Controller simulating the REST API endpoints specified in openapi.yaml:
- * - POST /api/v1/items
- * - GET /api/v1/items
- * - DELETE /api/v1/items/{id}
+ * Controller simulating REST API endpoints specified in `openapi.yaml`:
+ * - `POST /api/v1/items`
+ * - `GET /api/v1/items`
+ * - `PUT /api/v1/items/{id}`
+ * - `DELETE /api/v1/items/{id}`
+ * - `GET /api/v1/settings`
+ * - `PUT /api/v1/settings`
+ * - `POST /api/v1/backups/export`
+ * - `POST /api/v1/backups/import`
  *
  * Clean Architecture Guarantee:
- * - Completely decoupled from SQLite database details (communicates strictly via ItemRepository).
- * - Standardized HTTP status codes via HttpStatus object.
+ * - Completely decoupled from SQLite database details (communicates strictly via [ItemRepository]).
+ * - Enforces validation via [ItemValidator] and returns standardized HTTP status codes wrapped in [ApiResponse].
  */
 class ItemApiController(
     private val repository: ItemRepository? = null,
@@ -46,8 +51,10 @@ class ItemApiController(
     private var inMemoryLeadTime = DEFAULT_NOTIFICATION_LEAD_TIME_DAYS
 
     /**
-     * POST /api/v1/items: Create a new item.
-     * Consumes ItemInput and returns ApiResponse(201, Item) or ApiResponse(400, ErrorResponse).
+     * Simulates `POST /api/v1/items`: Creates a new tracked item.
+     *
+     * @param input The [ItemInput] payload containing title, expiration date, category, and optional storage location.
+     * @return An [ApiResponse] containing HTTP 201 Created with the persisted [Item] on success, or HTTP 400 Bad Request with [ErrorResponse] if validation fails.
      */
     suspend fun createItem(input: ItemInput): ApiResponse<Item> {
         val method = "POST"
@@ -114,9 +121,11 @@ class ItemApiController(
     }
 
     /**
-     * PUT /api/v1/items/{id}: Update an existing item.
-     * Consumes id path parameter and ItemInput body.
-     * Returns ApiResponse(200, Item), ApiResponse(400, ErrorResponse), or ApiResponse(404, ErrorResponse).
+     * Simulates `PUT /api/v1/items/{id}`: Updates an existing item record.
+     *
+     * @param id The unique string identifier of the item to update.
+     * @param input The updated [ItemInput] payload.
+     * @return An [ApiResponse] containing HTTP 200 OK with the updated [Item], HTTP 400 Bad Request for validation errors, or HTTP 404 Not Found if the item ID does not exist.
      */
     suspend fun updateItem(id: String, input: ItemInput): ApiResponse<Item> {
         val method = "PUT"
@@ -204,9 +213,11 @@ class ItemApiController(
     }
 
     /**
-     * GET /api/v1/items: Retrieve all items sorted chronologically by expiration date.
-     * Consumes optional search and category query parameters.
-     * Returns ApiResponse(200, List<Item>) or ApiResponse(400, ErrorResponse).
+     * Simulates `GET /api/v1/items`: Retrieves all items sorted chronologically by expiration date.
+     *
+     * @param search Optional keyword query to filter items by title matching.
+     * @param category Optional category filter ("Food", "Medicine", "Cosmetics", "Chemicals", "All", or null).
+     * @return An [ApiResponse] containing HTTP 200 OK with a sorted list of [Item] instances, or HTTP 400 Bad Request if the category query parameter is invalid.
      */
     suspend fun getItems(
         search: String? = null,
@@ -277,9 +288,10 @@ class ItemApiController(
     }
 
     /**
-     * DELETE /api/v1/items/{id}: Delete an item by ID.
-     * Consumes item id path parameter.
-     * Returns ApiResponse(204, Unit) on success or ApiResponse(404, ErrorResponse) if missing.
+     * Simulates `DELETE /api/v1/items/{id}`: Permanently deletes an item record by ID.
+     *
+     * @param id The unique string identifier of the item to delete.
+     * @return An [ApiResponse] with HTTP 204 No Content on success, or HTTP 404 Not Found with [ErrorResponse] if the item ID is missing.
      */
     suspend fun deleteItem(id: String): ApiResponse<Unit> {
         val method = "DELETE"
@@ -320,7 +332,9 @@ class ItemApiController(
     }
 
     /**
-     * GET /api/v1/settings: Retrieve global settings.
+     * Simulates `GET /api/v1/settings`: Retrieves global configuration settings.
+     *
+     * @return An [ApiResponse] containing HTTP 200 OK with current [Settings].
      */
     suspend fun getSettings(): ApiResponse<Settings> {
         val method = "GET"
@@ -342,7 +356,10 @@ class ItemApiController(
     }
 
     /**
-     * PUT /api/v1/settings: Update global settings.
+     * Simulates `PUT /api/v1/settings`: Updates global configuration settings.
+     *
+     * @param settings The [Settings] object containing the new notification lead time. Must be 1, 3, 7, or 14 days.
+     * @return An [ApiResponse] containing HTTP 200 OK with updated [Settings], or HTTP 400 Bad Request if the lead time value is unsupported.
      */
     suspend fun updateSettings(settings: Settings): ApiResponse<Settings> {
         val method = "PUT"
@@ -392,7 +409,9 @@ class ItemApiController(
     }
 
     /**
-     * POST /api/v1/backups/export: Export database into BackupData payload.
+     * Simulates `POST /api/v1/backups/export`: Serializes database state into a backup export payload.
+     *
+     * @return An [ApiResponse] containing HTTP 200 OK with [BackupData], or HTTP 500 Internal Server Error if export fails.
      */
     suspend fun exportBackup(): ApiResponse<BackupData> {
         val method = "POST"
@@ -427,7 +446,10 @@ class ItemApiController(
     }
 
     /**
-     * POST /api/v1/backups/import: Import database from BackupData payload.
+     * Simulates `POST /api/v1/backups/import`: Restores database state from a backup import payload.
+     *
+     * @param backupData The [BackupData] payload containing settings and item records to restore.
+     * @return An [ApiResponse] containing HTTP 200 OK with a success message, or HTTP 400 Bad Request if backup schema validation or transaction restoration fails.
      */
     suspend fun importBackup(backupData: BackupData?): ApiResponse<String> {
         val method = "POST"

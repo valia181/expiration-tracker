@@ -6,8 +6,9 @@ import com.example.expirationtracker.domain.model.Item
 import java.time.LocalDate
 
 /**
- * UseCase to retrieve items sorted chronologically (soonest first)
- * with dynamically assigned status colors.
+ * Use case responsible for processing a raw list of items by sorting them chronologically (soonest expiring first)
+ * and dynamically computing their status colors (Red, Orange, Green) based on expiration dates and global lead time settings.
+ *
  * Traceability: REQ-F-004, REQ-F-005, AC-F-004, AC-F-005.
  */
 class GetSortedItemsWithStatusUseCase(
@@ -18,6 +19,14 @@ class GetSortedItemsWithStatusUseCase(
         private const val TAG = "GetSortedItemsWithStatusUseCase"
     }
 
+    /**
+     * Executes chronological sorting and status color computation on the provided item collection.
+     *
+     * @param items The raw list of [Item] instances to process.
+     * @param currentDate The baseline date used for status comparisons (defaults to [LocalDate.now]).
+     * @param leadTimeDays The global notification lead time in days (must be 1, 3, 7, or 14).
+     * @return A new list of [Item] objects sorted in ascending order by expiration date, with computed [Item.statusColor] assigned.
+     */
     fun execute(
         items: List<Item>,
         currentDate: LocalDate = LocalDate.now(),

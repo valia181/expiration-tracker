@@ -1,23 +1,23 @@
 # Requirements Traceability Matrix
 
-| Requirement ID | Acceptance Criteria | Task / Ticket ID | Test ID | API Endpoint | Implementation Status |
-|---|---|---|---|---|---|
-| REQ-F-001 | AC-F-001 | TSK-003 | TSK-002 | `POST /api/v1/items` | Implemented |
-| REQ-F-002 | AC-F-002 | TSK-003 | TSK-002 | `POST /api/v1/items` | Implemented |
-| REQ-F-003 | AC-F-003 | TSK-003 | TSK-002 | `POST /api/v1/items` | Implemented |
-| REQ-F-004 | AC-F-004 | TSK-005 | TSK-004 | `GET /api/v1/items` | Implemented |
-| REQ-F-005 | AC-F-005 | TSK-005 | TSK-004 | `GET /api/v1/items` | Implemented |
-| REQ-F-006 | AC-F-006 | TSK-009 | TSK-008 | `GET /api/v1/items` | Implemented |
-| REQ-F-007 | AC-F-007 | TSK-009 | TSK-008 | `GET /api/v1/items` | Implemented |
-| REQ-F-008 | AC-F-008 | TSK-011 | TSK-010 | `GET /api/v1/settings`, `PUT /api/v1/settings` | Implemented |
-| REQ-F-009 | AC-F-009 | TSK-015 | TSK-014 | `POST /api/v1/backups/export` | Implemented |
-| REQ-F-010 | AC-F-010 | TSK-015 | TSK-014 | `POST /api/v1/backups/import` | Implemented |
-| REQ-F-011 | AC-F-011 | TSK-007 | TSK-006 | `DELETE /api/v1/items/{id}` | Implemented |
-| REQ-F-012 | AC-F-012 | TSK-018 | TSK-017 | `PUT /api/v1/items/{id}` | Implemented |
-| REQ-NF-001 | - | TSK-016 | GATE-02, TSK-016 | - | Implemented |
-| REQ-NF-002 | AC-NF-002 | TSK-009 | TSK-008, TSK-016 | - | Implemented |
-| REQ-NF-003 | - | TSK-001 | GATE-01 | - | Implemented |
-| REQ-NF-004 | AC-NF-001 | TSK-013 | TSK-012 | - | Implemented |
-| REQ-NF-005 | AC-NF-003 | TSK-005 | TSK-004, TSK-016 | - | Implemented |
-| REQ-NF-006 | AC-NF-003 | TSK-005 | TSK-004, TSK-016 | - | Implemented |
-| REQ-NF-007 | AC-NF-004 | TSK-001 | GATE-01 | - | Implemented |
+| Req ID | Requirement Summary & Acceptance Criteria | Ticket ID | Code Module / UI Element | Verification (Test File / Class) | Documentation Section |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **REQ-F-001** | Manual item creation (title, expiration date, category, storage location). AC-F-001 | TSK-003 | `ItemDao`, `ItemRepository`, `ItemApiController`, `AddItemDialog` | `ItemApiContractTest`, `AddItemAndListUiTest` | User Guide (§3), OpenAPI (`POST /items`), Architecture (§4) |
+| **REQ-F-002** | Title validation (non-empty, non-whitespace). AC-F-002 | TSK-003 | `ItemValidator`, `ItemApiController`, `AddItemDialog` | `ItemValidationTest`, `ItemValidationBoundaryTest`, `OpenApiContractVerificationTest` | OpenAPI (`POST /items`), Architecture (§3.2) |
+| **REQ-F-003** | Expiration date validation (valid ISO-8601 calendar date YYYY-MM-DD). AC-F-003 | TSK-003 | `ItemValidator`, `ItemApiController`, `AddItemDialog` | `ItemValidationTest`, `ItemValidationBoundaryTest` | OpenAPI (`POST /items`), Architecture (§3.2) |
+| **REQ-F-004** | Chronological item list sorted by expiration date (soonest first). AC-F-004 | TSK-005 | `ItemDao`, `ItemRepository`, `GetSortedItemsWithStatusUseCase`, `ItemListScreen` | `ItemChronologicalSortingAndStatusTest`, `ItemListContractAndBddTest` | User Guide (§2), OpenAPI (`GET /items`), Architecture (§3) |
+| **REQ-F-005** | Dynamic 3-level color status (Red, Orange, Green). AC-F-005 | TSK-005 | `StatusColorCalculator`, `ItemCard`, `ItemListScreen` | `ItemChronologicalSortingAndStatusTest`, `ItemListContractAndBddTest` | User Guide (§2), Architecture (§3.2) |
+| **REQ-F-006** | Search interface filtering items by title. AC-F-006 | TSK-009 | `ItemDao`, `ItemRepository`, `ItemApiController`, `ItemListScreen` | `ItemSearchAndFilterUnitTest`, `ItemSearchAndFilterUiTest` | User Guide (§4), OpenAPI (`GET /items`), Architecture (§3) |
+| **REQ-F-007** | Category filter controls (Food, Medicine, Cosmetics, Chemicals, All). AC-F-007 | TSK-009 | `ItemDao`, `ItemRepository`, `Category`, `ItemListScreen` | `CategoryFilterBugTest`, `ItemSearchAndFilterUiTest` | User Guide (§4), OpenAPI (`GET /items`), Architecture (§3) |
+| **REQ-F-008** | Global notification lead time settings (1, 3, 7, 14 days). AC-F-008 | TSK-011 | `SettingsDao`, `ItemRepository`, `SettingsDialog`, `ItemApiController` | `SettingsApiContractTest`, `SettingsUITest` | User Guide (§6), OpenAPI (`GET/PUT /settings`), Architecture (§3) |
+| **REQ-F-009** | Database export to JSON via Storage Access Framework (SAF). AC-F-009 | TSK-015 | `ItemRepository`, `JsonUtil`, `ItemApiController`, `ItemListScreen` | `BackupApiContractTest`, `BackupUiTest` | User Guide (§6), OpenAPI (`POST /backups/export`), Architecture (§3) |
+| **REQ-F-010** | Database import from JSON via Storage Access Framework (SAF). AC-F-010 | TSK-015 | `ItemRepository`, `JsonUtil`, `ItemApiController`, `ItemListScreen` | `BackupApiContractTest`, `BackupUiTest` | User Guide (§6), OpenAPI (`POST /backups/import`), Architecture (§3) |
+| **REQ-F-011** | Manual item deletion. AC-F-011 | TSK-007 | `ItemDao`, `ItemRepository`, `ItemApiController`, `ItemCard` | `ItemDeletionTest`, `ItemDeletionUiTest` | User Guide (§3), OpenAPI (`DELETE /items/{id}`), Architecture (§3) |
+| **REQ-F-012** | Item editing functionality. AC-F-012 | TSK-018 | `ItemDao`, `ItemRepository`, `ItemApiController`, `AddItemDialog` | `ItemEditApiContractTest`, `ItemEditUiTest` | User Guide (§3), OpenAPI (`PUT /items/{id}`), Architecture (§3) |
+| **REQ-NF-001** | UI smoothness maintaining minimum 60 fps during list scrolling. AC-NF-001 | TSK-016 | `ItemListScreen`, `LazyColumn` | `AccessibilityAndPerformanceTest` | Architecture (§2), SRS (§6) |
+| **REQ-NF-002** | Local database queries and rendering complete under 100ms. AC-NF-002 | TSK-009, TSK-016 | `ItemDao`, `ItemRepository` | `AccessibilityAndPerformanceTest` | Architecture (§3.1), SRS (§6) |
+| **REQ-NF-003** | Local SQLite transactional integrity during read/write/export/import. | TSK-001 | `ItemDao`, `ExpirationTrackerDbHelper`, `ItemRepository` | `BackupApiContractTest`, `ItemValidationBoundaryTest` | Architecture (§1, §2), SRS (§6) |
+| **REQ-NF-004** | Persistent background scheduling via WorkManager. AC-NF-001 | TSK-013 | `ExpirationNotificationWorker`, `NotificationScheduler` | `NotificationSchedulerTest` | Architecture (§3.4), User Guide (§5), SRS (§6) |
+| **REQ-NF-005** | Color contrast ratio standards meeting WCAG 2.1 Level AA (4.5:1). AC-NF-003 | TSK-005, TSK-016 | `Theme.kt`, `Color.kt`, `ItemCard` | `AccessibilityAndPerformanceTest` | Architecture (§3.3), SRS (§6) |
+| **REQ-NF-006** | Material Design 3 interactive elements with minimum 48x48 dp touch target. AC-NF-003 | TSK-005, TSK-016 | `ItemListScreen`, `SettingsDialog`, `ItemCard` | `AccessibilityAndPerformanceTest` | Architecture (§3.3), SRS (§6) |
+| **REQ-NF-007** | Clean architecture separation (MVVM pattern separating UI, domain, data). AC-NF-004 | TSK-001 | `ui/`, `domain/`, `data/` packages | `OpenApiContractVerificationTest`, Unit Tests | Architecture (§1), SRS (§6) |

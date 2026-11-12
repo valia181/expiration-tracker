@@ -54,6 +54,7 @@ class ItemDeletionUiTest {
 
         // When the user triggers the delete action for that item
         composeTestRule.onNodeWithContentDescription("Delete Temporary Item").performClick()
+        composeTestRule.onNodeWithTag("btn_confirm_delete").performClick()
 
         // Then the item is permanently removed and immediately disappears visually from the screen (AC-F-011)
         composeTestRule.onNodeWithText("Temporary Item").assertDoesNotExist()

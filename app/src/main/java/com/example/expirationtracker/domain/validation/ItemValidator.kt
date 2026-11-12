@@ -10,7 +10,7 @@ import java.time.format.DateTimeParseException
 import java.time.format.ResolverStyle
 
 /**
- * Validation result containing status and localized/descriptive error messages.
+ * Encapsulates validation results including overall validity flag and collected descriptive error messages.
  */
 data class ValidationResult(
     val isValid: Boolean,
@@ -18,7 +18,7 @@ data class ValidationResult(
 )
 
 /**
- * Validates Item input per requirements:
+ * Domain validator ensuring item inputs adhere strictly to business rules and data constraints:
  * - REQ-F-002 & AC-F-002: Title must be non-empty and not solely whitespace.
  * - REQ-F-003 & AC-F-003: Expiration date must be a valid calendar date in ISO-8601 format (YYYY-MM-DD). Past dates are valid.
  */
@@ -39,6 +39,12 @@ class ItemValidator {
         .ofPattern(DATE_FORMAT_PATTERN)
         .withResolverStyle(ResolverStyle.STRICT)
 
+    /**
+     * Validates an [ItemInput] payload against title non-blankness and strict ISO-8601 calendar date rules.
+     *
+     * @param input The [ItemInput] data to validate.
+     * @return A [ValidationResult] indicating success or containing detailed failure reasons.
+     */
     fun validate(input: ItemInput): ValidationResult {
         val errors = mutableListOf<String>()
 
@@ -74,7 +80,12 @@ class ItemValidator {
     }
 
     /**
-     * Maps validation failure to OpenAPI ErrorResponse specification (HTTP 400 Bad Request semantics).
+     * Maps validation failure results to OpenAPI-compliant [ErrorResponse] data structure with HTTP 400 Bad Request semantics.
+     *
+     * @param validationResult The [ValidationResult] containing failure error messages.
+     * @param path The API request path associated with the validation error.
+     * @param timestamp The ISO-8601 timestamp string (defaults to current instant).
+     * @return An [ErrorResponse] populated with HTTP 400 status and consolidated error messages.
      */
     fun toErrorResponse(
         validationResult: ValidationResult,

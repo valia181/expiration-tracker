@@ -203,7 +203,9 @@ fun ItemListScreen(
                         selected = isSelected,
                         onClick = { viewModel.onCategorySelected(if (label == "All") null else label) },
                         label = { Text(label) },
-                        modifier = Modifier.testTag("filter_chip_${label.lowercase()}")
+                        modifier = Modifier
+                            .sizeIn(minHeight = 48.dp)
+                            .testTag("filter_chip_${label.lowercase()}")
                     )
                 }
             }

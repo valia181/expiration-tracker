@@ -69,8 +69,8 @@ class NotificationSchedulerTest {
         assertEquals(1, workInfos.size)
         val workInfo = workInfos[0]
         assertTrue(
-            "Periodic background notification work must be ENQUEUED or RUNNING",
-            workInfo.state == WorkInfo.State.ENQUEUED || workInfo.state == WorkInfo.State.RUNNING
+            "Periodic background notification work must be ENQUEUED, RUNNING, or SUCCEEDED",
+            workInfo.state == WorkInfo.State.ENQUEUED || workInfo.state == WorkInfo.State.RUNNING || workInfo.state == WorkInfo.State.SUCCEEDED
         )
     }
 

@@ -22,6 +22,7 @@ import com.example.expirationtracker.ui.theme.StatusOrangeText
 import com.example.expirationtracker.ui.theme.StatusRedContainer
 import com.example.expirationtracker.ui.theme.StatusRedText
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,6 +43,11 @@ class AccessibilityAndPerformanceTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
+
+    @Before
+    fun setUp() {
+        composeTestRule.activity
+    }
 
     // ==========================================
     // 1. Accessibility: Touch Targets >= 48x48 dp (REQ-NF-006)

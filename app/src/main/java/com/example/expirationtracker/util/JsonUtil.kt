@@ -9,11 +9,19 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Clean JSON serializer/deserializer for BackupData using org.json (Android SDK native).
- * Traceability: REQ-F-009, REQ-F-010.
+ * Serialization utility providing robust JSON parsing and generation for database backup and restore operations
+ * utilizing Android's native `org.json` parser.
+ *
+ * Traceability: REQ-F-009, REQ-F-010, AC-F-009, AC-F-010.
  */
 object JsonUtil {
 
+    /**
+     * Serializes a [BackupData] model (comprising global settings and all item records) into a formatted JSON string.
+     *
+     * @param backupData The [BackupData] domain model to serialize.
+     * @return A pretty-printed JSON string representation of the backup payload.
+     */
     fun toJson(backupData: BackupData): String {
         val jsonObject = JSONObject()
 
@@ -41,6 +49,12 @@ object JsonUtil {
         return jsonObject.toString(2)
     }
 
+    /**
+     * Deserializes a JSON string back into a validated [BackupData] domain model.
+     *
+     * @param jsonString The raw JSON string read from a backup file.
+     * @return A parsed [BackupData] instance, or `null` if the JSON structure is malformed or missing required fields.
+     */
     fun fromJson(jsonString: String): BackupData? {
         return try {
             val jsonObject = JSONObject(jsonString)
